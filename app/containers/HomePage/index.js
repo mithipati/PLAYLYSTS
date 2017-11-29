@@ -10,15 +10,18 @@
  */
 
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
-import messages from './messages';
+import styled from 'styled-components';
+
+const Wrapper = styled.div`
+  grid-area: 2 / 2 / span 1 / span 1;
+`;
 
 export default class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
   render() {
     return (
-      <h1>
-        <FormattedMessage {...messages.header} />
-      </h1>
+      <Wrapper>
+        TEST
+      </Wrapper>
     );
   }
 }

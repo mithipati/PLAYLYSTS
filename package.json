@@ -225,6 +225,8 @@
     "invariant": "2.2.2",
     "ip": "1.1.5",
     "lodash": "4.17.4",
+    "material-design-icons": "^3.0.1",
+    "material-ui": "^1.0.0-beta.22",
     "minimist": "1.2.0",
     "prop-types": "15.5.10",
     "react": "15.6.1",
@@ -240,7 +242,8 @@
     "redux-saga": "0.15.3",
     "reselect": "3.0.1",
     "sanitize.css": "4.1.0",
-    "styled-components": "2.0.0",
+    "styled-components": "^2.0.0",
+    "typeface-roboto": "0.0.45",
     "warning": "3.0.0",
     "whatwg-fetch": "2.0.3"
   },
