@@ -4,22 +4,24 @@ import { Switch, Route } from 'react-router-dom';
 
 import AppWrapper from './style';
 
-import TopNav from '../../components/TopNav';
-import SideNav from '../../components/SideNav';
+import TopNav from '../../containers/TopNav';
+import SideNav from '../../containers/SideNav';
 import Player from '../../containers/Player';
-import HomePage from '../../containers/HomePage';
+import Library from '../Library';
+import Playlist from '../Playlist';
 import NotFoundPage from '../../containers/NotFoundPage/Loadable';
 
 export default function App() {
   return (
     <AppWrapper>
-      <TopNav />
-      <SideNav />
+      <TopNav/>
+      <SideNav/>
       <Switch>
-        <Route exact path="/" component={HomePage} />
+        <Route exact path="/" component={Library} />
+        <Route path="/list/:name" component={Playlist} />
         <Route component={NotFoundPage} />
       </Switch>
-      <Player />
+      <Player/>
     </AppWrapper>
   );
 }

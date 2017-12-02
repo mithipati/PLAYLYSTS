@@ -30,20 +30,8 @@ import configureStore from './configureStore';
 import './global-styles';
 
 // import Material UI HOC
-import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
-import grey from 'material-ui/colors/grey';
-import lightBlue from 'material-ui/colors/lightBlue';
-
-const theme = createMuiTheme({
-  palette: {
-    primary: grey,
-    secondary: lightBlue
-  },
-  typography: {
-    fontFamily: 'Roboto, "Helvetica Neue"',
-    htmlFontSize: 10,
-  }
-});
+import { MuiThemeProvider } from 'material-ui/styles';
+import theme from './global-theme';
 
 // create redux store with history
 const initialState = {};

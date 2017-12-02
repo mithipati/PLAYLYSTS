@@ -18,7 +18,6 @@ injectGlobal`
   }
 
   #app {
-    background-color: #fafafa;
     min-height: 100%;
     min-width: 100%;
   }
@@ -27,5 +26,18 @@ injectGlobal`
   label {
     font-family: Georgia, Times, 'Times New Roman', serif;
     line-height: 1.5em;
+  }
+  
+  a {
+    text-decoration: none;
+    color: #9E9E9E;
+  }
+  
+  a:visited {
+    color: #9E9E9E;
+  }
+  
+  a:hover {
+    color: #EEEEEE;
   }
 `;
