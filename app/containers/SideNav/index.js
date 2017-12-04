@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { withRouter } from 'react-router-dom';
 import classNames from 'classnames';
 
 import { Link } from 'react-router-dom';
@@ -40,30 +41,86 @@ const PLAYLISTS = [
 
 class SideNav extends React.Component {
   state = {
-    activeLink: ''
+    playlists: PLAYLISTS,
+    newPlaylist: '',
+    activeLink: this.props.location.pathname || '/',
   };
 
+  // UI methods
   handleLinkClick(activeLink) {
     this.setState({ activeLink })
+  }
+
+  handlePlaylistChange(event) {
+    this.setState({ newPlaylist: event.target.value });
+  }
+
+  handleCreatePlaylist(event) {
+    if (event.key === 'Enter') {
+      const { history } = this.props;
+      let playlist;
+
+      this.setState(state => {
+        playlist = {
+          id: Math.random(),
+          name: state.newPlaylist,
+          songIDs: []
+        };
+        const playlists = state.playlists.concat([ playlist ]);
+
+        return {
+          playlists,
+          newPlaylist: '',
+          activeLink: `/list/${playlist}`
+        };
+      }, () => {
+        history.push(`/list/${playlist}`);
+      });
+    }
+  }
+
+  // render methods
+  renderHomeButton() {
+    const { classes } = this.props;
+
+    return (
+      <Link to='/' onClick={this.handleLinkClick.bind(this, '/')}>
+        <Typography
+          type='subheading'
+          gutterBottom={true}
+          className={
+            classNames(
+              classes.heading,
+              classes.link,
+              classes.clearfix,
+              {
+                [classes.active]: this.state.activeLink === '/'
+              }
+            )
+          }
+        >
+          MY SONGS
+        </Typography>
+      </Link>
+    );
   }
 
   renderPlaylists() {
     const { classes } = this.props;
 
-    return PLAYLISTS.map(playlist => {
+    const playlists = this.state.playlists.map(playlist => {
       return (
-        <Link to={`/list/${playlist.name}`} key={playlist.id}>
+        <Link to={`/list/${playlist.name}`} key={playlist.id} onClick={this.handleLinkClick.bind(this, `/list/${playlist.name}`)}>
           <Typography
             type='subheading'
             gutterBottom={true}
             noWrap={true}
-            onClick={this.handleLinkClick.bind(this, playlist.id)}
             className={
               classNames(
                 classes.subheading,
                 classes.link,
                 {
-                  [classes.active]: this.state.activeLink === playlist.id
+                  [classes.active]: this.state.activeLink === `/list/${playlist.name}`
                 }
               )
             }
@@ -73,53 +130,58 @@ class SideNav extends React.Component {
         </Link>
       );
     });
-  }
-
-  render() {
-    const { classes } = this.props;
 
     return (
-      <div className={classes.root}>
-
-        <Link to='/'>
-          <Typography
-            type='subheading'
-            gutterBottom={true}
-            onClick={this.handleLinkClick.bind(this, 'main')}
-            className={
-              classNames(
-                classes.heading,
-                classes.link,
-                classes.clearfix,
-                {
-                  [classes.active]: this.state.activeLink === 'main'
-                }
-                )
-            }
-          >
-            MY SONGS
-          </Typography>
-        </Link>
-
+      [
         <Typography
+          key='main'
           type='subheading'
           gutterBottom={true}
           className={classes.heading}
         >
           PLAYLISTS
         </Typography>
+      ].concat(playlists)
+    );
+  }
+
+  renderAddPlaylistButton() {
+    const { classes } = this.props;
+
+    return (
+      <TextField
+        label='+ CREATE PLAYLIST'
+        InputLabelProps={{ FormControlClasses: { focused: classes.inputLabelFocused } }}
+        InputProps={{
+          className: classes.input,
+          inputProps: {
+            autoComplete: false,
+            autoCorrect: false,
+            autoCapitalize: false,
+            spellCheck: false,
+          }
+        }}
+        className={classNames(classes.textField, classes.subheading)}
+        ref={ input => { this.createPlaylistInput = input } }
+        value={this.state.newPlaylist}
+        onChange={this.handlePlaylistChange.bind(this)}
+        onKeyPress={this.handleCreatePlaylist.bind(this)}
+      />
+    );
+  }
+
+  // main
+  render() {
+    const { classes } = this.props;
+
+    return (
+      <div className={classes.root}>
+        { this.renderHomeButton() }
         { this.renderPlaylists() }
-
-        <TextField
-          label='+ CREATE PLAYLIST'
-          InputLabelProps={{ FormControlClasses: { focused: classes.inputLabelFocused } }}
-          InputProps={{ className: classes.input }}
-          className={classNames(classes.textField, classes.subheading)}
-        />
-
+        { this.renderAddPlaylistButton() }
       </div>
     );
   }
 }
 
-export default withStyles(styles)(SideNav);
+export default withStyles(styles)(withRouter(SideNav));

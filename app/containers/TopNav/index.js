@@ -16,11 +16,6 @@ const TopNav = ({ classes }) => {
               PLAYLYST
           </Typography>
         </Link>
-        <Link to='/settings'>
-          <Typography className={classes.settings}>
-              SETTINGS
-          </Typography>
-        </Link>
     </AppBar>
   );
 };

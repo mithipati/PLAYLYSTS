@@ -40,4 +40,16 @@ injectGlobal`
   a:hover {
     color: #EEEEEE;
   }
+  
+  .iconButton {
+    cursor: pointer;
+    
+    -webkit-transition: all .1s ease;
+    -moz-transition: all .1s ease;
+    transition: all .1s ease;
+
+    &:hover {
+      transform: scale(1.2);
+    }
+  }
 `;

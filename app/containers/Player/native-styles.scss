@@ -1,0 +1,35 @@
+
+.root {
+  grid-area: 3 / 1 / span 1 / span 3;
+  display: grid;
+  grid: auto / 225px 1fr 225px;
+  padding-left: 25px;
+  background-color: #212121;
+}
+
+.title-artist-container {
+  grid-area: 1 / 1 / span 1 / span 1;
+  margin-top: auto;
+}
+
+.playback-container {
+  grid-area: 1 / 2 / span 1 / span 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .playback-buttons {
+    margin-bottom: 5px;
+  }
+
+  .playback-progress {
+    width: 80%;
+    min-width: 400px;
+    margin-bottom: 10px;
+  }
+}
+
+.play {
+  margin: 0 20px;
+}

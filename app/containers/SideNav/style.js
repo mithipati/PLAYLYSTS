@@ -3,7 +3,8 @@ const styles = theme => ({
   root: {
     gridArea: '2 / 1 / span 1 / span 1',
     padding: '35px 15px 0 25px',
-    backgroundColor: '#424242',
+    backgroundColor: theme.palette.primary[800],
+    overflowY: 'scroll',
   },
   heading: {
     fontSize: 20,
@@ -17,11 +18,11 @@ const styles = theme => ({
     width: 'max-content',
     cursor: 'pointer',
     '&:hover': {
-      color: theme.palette.primary[200],
-    }
+      color: theme.palette.primary[300],
+    },
   },
   active: {
-    color: theme.palette.primary[200],
+    color: theme.palette.primary[300],
     borderBottomColor: theme.palette.secondary.A200,
     borderBottomStyle: 'solid',
     borderBottom: 1,

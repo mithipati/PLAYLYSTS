@@ -2,8 +2,9 @@
 const styles = theme => ({
   root: {
     gridArea: '2 / 2 / span 1 / span 1',
-    backgroundColor: '#616161',
     padding: '20px 30px 0 30px',
+    backgroundColor: theme.palette.primary[700],
+    overflowY: 'scroll',
   },
   heading: {
     margin: '15px 0 30px 0',

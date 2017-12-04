@@ -1,0 +1,12 @@
+
+.tableRow {
+  .button {
+    opacity: 0;
+  }
+
+  &:hover {
+    .button {
+      opacity: 1;
+    }
+  }
+}
