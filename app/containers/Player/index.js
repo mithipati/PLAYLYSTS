@@ -21,7 +21,7 @@ class Player extends React.Component {
     return (
       <div className='root'>
           <div className='title-artist-container'>
-            <Typography type='subheading' gutterBottom={true} className={classNames(classes.title)}>
+            <Typography type='subheading' gutterBottom={false} className={classNames(classes.title)}>
               Too Good At Goodbyes
             </Typography>
             <Typography type='subheading' gutterBottom={true} className={classNames(classes.artist)}>

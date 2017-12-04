@@ -6,6 +6,7 @@ const styles = theme => ({
     color: theme.palette.primary[300],
   },
   artist: {
+    marginBottom: 10,
     fontSize: 15,
     fontWeight: 200,
     color: theme.palette.primary[500],
