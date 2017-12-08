@@ -9,7 +9,7 @@ import SideNav from '../../containers/SideNav';
 import Player from '../../containers/Player';
 import Library from '../Library';
 import Playlist from '../Playlist';
-import NotFoundPage from '../../containers/NotFoundPage/Loadable';
+import NotFoundPage from '../../containers/NotFoundPage';
 
 export default function App() {
   return (
@@ -23,5 +23,5 @@ export default function App() {
       </Switch>
       <Player/>
     </AppWrapper>
-  );
+  );s
 }

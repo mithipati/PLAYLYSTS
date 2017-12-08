@@ -1,5 +1,16 @@
 
 import React from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
+import { createStructuredSelector } from 'reselect';
+
+import injectReducer from "../../utils/injectReducer";
+import reducer from './reducer';
+import injectSaga from '../../utils/injectSaga';
+import saga from '../../services/urlService';
+
+import { addSong, removeSong, changeSongLink } from './actions';
+import { makeSelectSongs, makeSelectSongLink, makeSelectIsSongLinkError } from './selectors';
 
 import Grid from 'material-ui/Grid';
 import { FormControl, FormHelperText } from 'material-ui/Form';
@@ -8,53 +19,11 @@ import Input from 'material-ui/Input';
 
 import Table from '../../components/Table';
 
+import classNames from 'classnames';
 import { withStyles } from 'material-ui/styles';
 import styles from './style';
 
-// TODO remove let SONGS
-const today = new Date();
-let SONGS = [];
-for (let i = 0; i < 20; i++) {
-  SONGS.push({
-    id: Math.random(),
-    title: 'Too Good At Goodbyes',
-    artist: 'Sam Smith',
-    source: 'SPOTIFY',
-    created_at: `${today.getDate()} / ${today.getMonth() + 1} / ${today.getFullYear()}`,
-  });
-}
-
 class Library extends React.Component {
-  state = {
-    songs: SONGS,
-    newSong: '',
-  };
-
-  handleSongChange(event) {
-    this.setState({ newSong: event.target.value });
-  }
-
-  handleAddSong(event) {
-    if (event.key === 'Enter') {
-      let song;
-
-      this.setState(state => {
-        song = {
-          id: Math.random(),
-          title: state.newSong,
-          artist: 'Sam Smith',
-          source: 'Spotify',
-          created_at: 10002392890,
-        };
-        const songs = [song].concat(state.songs);
-
-        return {
-          songs,
-          newSong: '',
-        };
-      });
-    }
-  }
 
   render() {
     const { classes } = this.props;
@@ -62,26 +31,32 @@ class Library extends React.Component {
     return (
       <div className={classes.root}>
         <Grid container item={true}>
-          <Grid item xs={2} sm={2}>
+          <Grid className={classes.addSongContainer} item xs={12} sm={12}>
             <Typography type='display2' className={classes.heading}>
               Add Song
             </Typography>
-          </Grid>
-          <Grid item xs={10} sm={10}>
             <FormControl className={classes.formControl}>
               <Input
                 placeholder='Enter a valid YouTube, SoundCloud, or Spotify song link'
                 fullWidth
-                className={classes.input}
+                className={classNames(classes.input, { [classes.error]: this.props.isSongLinkError })}
                 autoComplete={false}
                 autoCorrect={false}
                 autoCapitalize={false}
                 spellCheck={false}
-                value={this.state.newSong}
-                onChange={this.handleSongChange.bind(this)}
-                onKeyPress={this.handleAddSong.bind(this)}
+                error
+                value={this.props.songLink}
+                onChange={(event) => this.props.onChangeSongLink(event.target.value)}
+                onKeyPress={(event) => { if (event.key === 'Enter') this.props.onAddSong(event.target.value) }}
               />
-              <FormHelperText className={classes.helperText}>Need help?</FormHelperText>
+              <FormHelperText
+                className={classNames(classes.errorMessage, { [classes.error]: this.props.isSongLinkError })}
+              >
+                Invalid link. Please enter a new link and try again.
+              </FormHelperText>
+              <FormHelperText className={classes.helperText}>
+                Need help?
+              </FormHelperText>
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={12}>
@@ -90,7 +65,7 @@ class Library extends React.Component {
             </Typography>
           </Grid>
           <Grid item xs={12} sm={12}>
-            <Table songs={this.state.songs} />
+            <Table songs={this.props.songs} onRemoveSong={this.props.onRemoveSong} />
           </Grid>
         </Grid>
       </div>
@@ -98,4 +73,27 @@ class Library extends React.Component {
   }
 }
 
-export default withStyles(styles)(Library);
+export function mapDispatchToProps(dispatch) {
+  return {
+    onAddSong: (url) => dispatch(addSong(url)),
+    onChangeSongLink: (url) => dispatch(changeSongLink(url)),
+    onRemoveSong: (song) => dispatch(removeSong(song)),
+  };
+}
+
+const mapStateToProps = createStructuredSelector({
+  songs: makeSelectSongs(),
+  songLink: makeSelectSongLink(),
+  isSongLinkError: makeSelectIsSongLinkError(),
+});
+
+const withConnect = connect(mapStateToProps, mapDispatchToProps);
+const withReducer = injectReducer({ key: 'library', reducer });
+const withSaga = injectSaga({ key: 'library', saga });
+
+export default compose(
+  withStyles(styles),
+  withReducer,
+  withSaga,
+  withConnect,
+)(Library);

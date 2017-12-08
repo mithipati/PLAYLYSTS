@@ -16,18 +16,24 @@ class TableUI extends React.Component {
   renderTableRows() {
     const { songs, classes } = this.props;
 
-    return songs.map(row => {
+    return songs.map(song => {
       return (
-        <TableRow hover key={row.id} className={classNames(classes.tableRow, 'tableRow')}>
+        <TableRow hover key={song.get('id')} className={classNames(classes.tableRow, 'tableRow')}>
           <TableCell padding='checkbox' className={classNames(classes.tableCell, classes.button)}>
             <Ionicon className='button iconButton' icon='ios-play-outline' fontSize='30px' color='#40C4FF'/>
           </TableCell>
-          <TableCell padding='default' className={classes.tableCell}>{row.title}</TableCell>
-          <TableCell padding='checkbox' className={classes.tableCell}>{row.artist}</TableCell>
-          <TableCell padding='checkbox' className={classes.tableCell}>{row.source}</TableCell>
-          <TableCell padding='checkbox' className={classes.tableCell}>{row.created_at}</TableCell>
+          <TableCell padding='default' className={classes.tableCell}>{song.get('title')}</TableCell>
+          <TableCell padding='checkbox' className={classes.tableCell}>{song.get('artist')}</TableCell>
+          <TableCell padding='checkbox' className={classes.tableCell}>{song.get('source')}</TableCell>
+          <TableCell padding='checkbox' className={classes.tableCell}>{song.get('created_at')}</TableCell>
           <TableCell padding='checkbox' className={classNames(classes.tableCell, classes.button)}>
-            <Ionicon className='button iconButton' icon='ios-more' fontSize='30px' color='#40C4FF'/>
+            <Ionicon
+              className='button iconButton'
+              icon='ios-more'
+              fontSize='30px'
+              color='#40C4FF'
+              onClick={this.props.onRemoveSong.bind(this, song)}
+            />
           </TableCell>
         </TableRow>
       );
@@ -37,7 +43,7 @@ class TableUI extends React.Component {
   render() {
     const { songs, classes } = this.props;
 
-    if (!songs.length) {
+    if (!songs.size) {
       return (
         <Paper className={classes.root}>
           <Typography type='headline' className={classes.placeholder}>
@@ -70,7 +76,7 @@ class TableUI extends React.Component {
 }
 
 TableUI.propTypes = {
-  songs: PropTypes.array.isRequired,
+  // songs: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(TableUI);
