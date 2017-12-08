@@ -7,7 +7,7 @@ import { createStructuredSelector } from 'reselect';
 import injectReducer from "../../utils/injectReducer";
 import reducer from './reducer';
 import injectSaga from '../../utils/injectSaga';
-import saga from '../../services/urlService';
+import saga from '../../services/parser';
 
 import { addSong, removeSong, changeSongLink } from './actions';
 import { makeSelectSongs, makeSelectSongLink, makeSelectIsSongLinkError } from './selectors';

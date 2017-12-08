@@ -5,13 +5,13 @@ import { ADD_SONG_SUCCESS, REMOVE_SONG, CHANGE_SONG_LINK, ADD_SONG_ERROR } from 
 // TODO remove let SONGS
 const today = new Date();
 let SONGS = [];
-for (let i = 0; i < 20; i++) {
+for (let i = 0; i < 5; i++) {
   SONGS.push({
     id: Math.random(),
     title: 'Too Good At Goodbyes',
     artist: 'Sam Smith',
     source: 'YouTube',
-    created_at: `${today.getDate()} / ${today.getMonth() + 1} / ${today.getFullYear()}`,
+    created_at: `${today.getMonth() + 1} / ${today.getDate()} / ${today.getFullYear()}`,
   });
 }
 
