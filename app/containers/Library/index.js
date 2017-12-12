@@ -65,6 +65,7 @@ class Library extends React.Component {
             </Typography>
           </Grid>
           <Grid item xs={12} sm={12}>
+            <div id='video-player'></div>
             <Table songs={this.props.songs} onRemoveSong={this.props.onRemoveSong} />
           </Grid>
         </Grid>

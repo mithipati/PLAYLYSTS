@@ -1,8 +1,8 @@
 
 import { select, put, call, takeLatest } from 'redux-saga/effects';
-import SC from 'soundcloud';
 
 import request from '../utils/request';
+import { SOUNDCLOUD_CLIENT_ID } from '../secret';
 
 import { ADD_SONG } from '../containers/Library/constants';
 import { makeSelectSongLink } from '../containers/Library/selectors';
@@ -18,10 +18,10 @@ function* getTrack() {
   let track, errorMessage;
 
   const trackLink = yield select(makeSelectSongLink());
-  const clientID = 'e4874f1ad3d0d58fb061263485641b85';
-  const requestURL = `http://api.soundcloud.com/resolve?url=${trackLink}&client_id=${clientID}`;
+  const requestURL = `http://api.soundcloud.com/resolve?url=${trackLink}&client_id=${SOUNDCLOUD_CLIENT_ID}`;
 
   try {
+
     const trackData = yield call(request, requestURL);
     track = fromJS({
       id: Math.random(),
@@ -31,9 +31,12 @@ function* getTrack() {
       created_at: _getCurrentDate(),
     });
     yield put(addSongSuccess(track));
+
   } catch (error) {
+
     errorMessage = error.message;
     yield put(addSongError(errorMessage));
+
   }
 }
 
