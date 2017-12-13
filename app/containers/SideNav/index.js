@@ -51,11 +51,11 @@ class SideNav extends React.Component {
     this.setState({ activeLink })
   }
 
-  handlePlaylistChange(event) {
+  handlePlaylistChange = (event) => {
     this.setState({ newPlaylist: event.target.value });
-  }
+  };
 
-  handleCreatePlaylist(event) {
+  handleCreatePlaylist = (event) => {
     if (event.key === 'Enter') {
       const { history } = this.props;
       let playlist;
@@ -77,7 +77,7 @@ class SideNav extends React.Component {
         history.push(`/list/${playlist}`);
       });
     }
-  }
+  };
 
   // render methods
   renderHomeButton() {
@@ -164,8 +164,8 @@ class SideNav extends React.Component {
         className={classNames(classes.textField, classes.subheading)}
         ref={ input => { this.createPlaylistInput = input } }
         value={this.state.newPlaylist}
-        onChange={this.handlePlaylistChange.bind(this)}
-        onKeyPress={this.handleCreatePlaylist.bind(this)}
+        onChange={this.handlePlaylistChange}
+        onKeyPress={this.handleCreatePlaylist}
       />
     );
   }
