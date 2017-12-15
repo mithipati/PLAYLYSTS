@@ -26,7 +26,7 @@ const styles = theme => ({
     '&:hover': {
       color: theme.palette.primary[200],
     },
-  }
+  },
 });
 
 export default styles;

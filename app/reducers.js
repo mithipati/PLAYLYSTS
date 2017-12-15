@@ -5,6 +5,8 @@
 import { combineReducers } from 'redux-immutable';
 import { fromJS } from 'immutable';
 import { LOCATION_CHANGE } from 'react-router-redux';
+import { firebaseReducer } from 'react-redux-firebase';
+import { reducer as formReducer } from 'redux-form/immutable';
 
 import globalReducer from './containers/App/reducer';
 
@@ -42,7 +44,9 @@ function routeReducer(state = routeInitialState, action) {
 export default function createReducer(injectedReducers) {
   return combineReducers({
     route: routeReducer,
+    firebase: firebaseReducer,
     global: globalReducer,
+    form: formReducer,
     ...injectedReducers,
   });
 }
