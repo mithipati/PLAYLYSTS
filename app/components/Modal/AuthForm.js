@@ -7,6 +7,7 @@ import { Field, reduxForm } from 'redux-form/immutable';
 import { TextField } from 'redux-form-material-ui';
 import { FormGroup } from 'material-ui/Form';
 import { CircularProgress } from 'material-ui/Progress';
+import { FormHelperText } from 'material-ui/Form';
 
 import { withStyles } from 'material-ui/styles';
 import styles from './style';
@@ -14,38 +15,82 @@ import classNames from 'classnames';
 
 class AuthForm extends React.Component {
   state = {
-    isEmailSubmitting: false,
+    isSubmitting: false,
     isFacebookSubmitting: false,
   };
 
-  handleEmailSubmit = values => {
-    this.setState({ isEmailSubmitting: true });
+  handleSubmit = values => {
+    this.setState({ isSubmitting: true });
 
-    const { handleClose } = this.props;
+    const { isNewUser, isResetPassword, handleClose, firebase } = this.props;
+    const email = values.get('email');
 
-    if (this.props.isNewUser) {
+    // validate required email
+    if (!email){
+      this.setState({ isSubmitting: false });
 
-      // validate password confirmation
-      if (values.get('password').length < 6) {
-        this.setState({ isEmailSubmitting: false });
+      throw new SubmissionError({
+        email: 'Required'
+      });
+    }
+
+    if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email)) {
+      this.setState({ isSubmitting: false });
+
+      throw new SubmissionError({
+        email: 'Invalid email'
+      });
+    }
+
+    // validate required password if not resetting it
+    if (!isResetPassword) {
+      if (!values.get('password')){
+        this.setState({ isSubmitting: false });
+
+        throw new SubmissionError({
+          password: 'Required'
+        });
+      }
+    }
+
+      // validate password length and confirmation match on Sign Up
+    if (isNewUser) {
+
+      const password = values.get('password');
+      if (password && password.length < 6) {
+        this.setState({ isSubmitting: false });
+
         throw new SubmissionError({
           password: 'Password should be at least 6 characters'
         });
       }
-      if (values.get('password') !== values.get('password_confirmation')) {
-        this.setState({ isEmailSubmitting: false });
+      if (password !== values.get('password_confirmation')) {
+        this.setState({ isSubmitting: false });
+
         throw new SubmissionError({
           password_confirmation: 'Passwords must match'
         });
       }
 
-      return this.props.firebase.createUser({
+      return firebase.createUser({
         email: values.get('email'),
         password: values.get('password')
-      }).then(
-        () => handleClose(),
-        error => {
-          this.setState({ isEmailSubmitting: false });
+      }).then(() => handleClose())
+        .catch(error => {
+          this.setState({ isSubmitting: false });
+
+          throw new SubmissionError({
+            email: error.message
+          });
+        });
+
+    } else if (isResetPassword) {
+
+      return firebase.resetPassword(email)
+        .then(() => handleClose())
+        .catch(error => {
+          this.setState({ isSubmitting: false });
+
           throw new SubmissionError({
             email: error.message
           });
@@ -53,13 +98,13 @@ class AuthForm extends React.Component {
 
     } else {
 
-      return this.props.firebase.login({
+      return firebase.login({
         email: values.get('email'),
         password: values.get('password')
-      }).then(
-        () => handleClose(),
-        error => {
-          this.setState({ isEmailSubmitting: false });
+      }).then(() => handleClose())
+        .catch(error => {
+          this.setState({ isSubmitting: false });
+
           throw new SubmissionError({
             email: error.message
           });
@@ -68,23 +113,31 @@ class AuthForm extends React.Component {
     }
   };
 
-  handleFacebookSubmit = (event) => {
-    event.preventDefault();
-
+  handleFacebookSubmit = () => {
     this.setState({ isFacebookSubmitting: true });
 
-    this.props.firebase.login({
+    const { handleClose } = this.props;
+
+    return this.props.firebase.login({
       provider: 'facebook',
-      type: 'redirect'
+      type: 'popup'
+    }).then(() => handleClose())
+      .catch(() => {
+      this.setState({ isFacebookSubmitting: false });
+
+      throw new SubmissionError({
+        facebook: `An account already exists with the email associated with this Facebook profile.
+          Please log in using that email and password, not via Facebook.`
+      });
     });
   };
 
   render() {
-    const { isNewUser, handleSubmit, submitting, classes } = this.props;
+    const { isNewUser, isResetPassword, handleSubmit, handleDisplayResetPassword, submitting, classes } = this.props;
 
     return (
-      <form onSubmit={handleSubmit(this.handleEmailSubmit)} className={classes.form}>
-        <FormGroup className={classes.formGroup}>
+      <form onSubmit={handleSubmit(this.handleSubmit)} className={classes.form}>
+        <FormGroup className={classNames(classes.formGroup, { [classes.formGroupReset]: isResetPassword })}>
           <Field
             name='email'
             label='Email'
@@ -94,17 +147,30 @@ class AuthForm extends React.Component {
             className={classNames(classes.textArea, { [classes.loginTextArea]: !isNewUser })}
             fullWidth
           />
-          <Field
-            name='password'
-            label='Password'
-            component={TextField}
-            InputLabelProps={{className: classes.label}}
-            InputProps={{className: classes.input}}
-            className={classNames(classes.textArea, { [classes.loginTextArea]: !isNewUser })}
-            fullWidth
-            type='password'
-          />
-          { isNewUser
+          {
+            isResetPassword
+            ? null
+            : [
+                <Field
+                  name='password'
+                  label='Password'
+                  key='input'
+                  component={TextField}
+                  InputLabelProps={{className: classes.label}}
+                  InputProps={{className: classes.input}}
+                  className={classNames(classes.textArea, { [classes.loginTextArea]: !isNewUser })}
+                  fullWidth
+                  type='password'
+                />,
+                !isNewUser
+                  ? <FormHelperText key='helperText' onClick={handleSubmit(handleDisplayResetPassword)} className={classes.helperText}>
+                      Reset Password
+                    </FormHelperText>
+                  : null
+              ]
+          }
+          {
+            isNewUser
             ? <Field
               name='password_confirmation'
               label='Confirm Password'
@@ -115,21 +181,39 @@ class AuthForm extends React.Component {
               fullWidth
               type='password'
             />
-            : null }
+            : null
+          }
         </FormGroup>
-        <button type='submit' disabled={submitting} className='action-button'>
-          { !this.state.isEmailSubmitting
-            ? <span>SUBMIT</span>
-            : <CircularProgress size={25} thickness={3.0} color='accent'/>
-          }
-        </button>
-        <div className={classes.clearfix}>- OR -</div>
-        <button onClick={this.handleFacebookSubmit} disabled={submitting} className='action-button'>
-          { !this.state.isFacebookSubmitting
-            ? <span><img src='facebook-icon.png' className='social-icon' />Continue with Facebook</span>
-            : <CircularProgress size={25} thickness={3.0} color='accent' />
-          }
-        </button>
+        {
+          isResetPassword
+          ? <button type='submit' disabled={submitting} className='action-button'>
+              { !this.state.isSubmitting
+                ? <span>RESET</span>
+                : <CircularProgress size={25} thickness={3.0} color='accent'/>
+              }
+            </button>
+          : <div>
+              <button type='submit' disabled={submitting} className='action-button'>
+                { !this.state.isSubmitting
+                  ? <span>SUBMIT</span>
+                  : <CircularProgress size={25} thickness={3.0} color='accent'/>
+                }
+              </button>
+              <div className={classes.clearfix}>- OR -</div>
+              <button onClick={handleSubmit(this.handleFacebookSubmit)} disabled={submitting} className='action-button'>
+                { !this.state.isFacebookSubmitting
+                  ? <span><img src='facebook-icon.png' className='social-icon' />Continue with Facebook</span>
+                  : <CircularProgress size={25} thickness={3.0} color='accent' />
+                }
+              </button>
+              <Field
+                name='facebook'
+                component={TextField}
+                type='hidden'
+                InputProps={{className: classes.hiddenInput}}
+              />
+            </div>
+        }
       </form>
     );
   }
@@ -138,7 +222,7 @@ class AuthForm extends React.Component {
 export default compose(
   withStyles(styles),
   reduxForm({
-    form: 'auth'
+    form: 'auth',
   }),
   firebaseConnect(),
 )(AuthForm);

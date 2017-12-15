@@ -71,6 +71,15 @@ injectGlobal`
     &:focus {
       outline: none;
     }
+    
+    &.error {
+      border: 1px solid #D50000;
+      color: #D50000;
+      
+      &:hover {
+        border: 2px solid #D50000;  
+      }
+    }
   } 
   
   .iconButton {

@@ -7,8 +7,9 @@ const styles = theme => ({
     backgroundColor: theme.palette.primary[900],
   },
   modalContent: {
+    width: '100%',
+    minWidth: 400,
     paddingTop: 10,
-    width: 400,
     backgroundColor: theme.palette.primary[900],
   },
   form: {
@@ -16,6 +17,9 @@ const styles = theme => ({
   },
   formGroup: {
     height: 205,
+  },
+  formGroupReset: {
+    height: '100%',
   },
   textArea: {
     height: '33%',
@@ -30,6 +34,20 @@ const styles = theme => ({
   input: {
     fontWeight: 300,
     color: theme.palette.secondary.A200,
+  },
+  hiddenInput: {
+    display: 'none',
+  },
+  helperText: {
+    position: 'absolute',
+    top: '50%',
+    marginTop: '-20px',
+    width: 'max-content',
+    cursor: 'pointer',
+    color: theme.palette.primary[700],
+    '&:hover': {
+      color: theme.palette.secondary.A200,
+    }
   },
   clearfix: {
     width: '100%',

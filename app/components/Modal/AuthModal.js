@@ -2,8 +2,8 @@
 import React from 'react';
 import { compose } from 'redux';
 
-import Tabs, { Tab } from 'material-ui/Tabs';
 import Dialog, { DialogContent } from 'material-ui/Dialog';
+import Tabs, { Tab } from 'material-ui/Tabs';
 
 import AuthForm from './AuthForm';
 
@@ -13,10 +13,20 @@ import styles from './style';
 class AuthModal extends React.Component {
   state = {
     tabNumber: 0,
+    isResetPassword: false,
   };
 
   handleChange = (event, tabNumber) => {
-    this.setState({ tabNumber });
+    let isResetPassword = this.state.isResetPassword;
+
+    if (tabNumber !== 2) {
+      isResetPassword = false;
+    }
+    this.setState({ tabNumber, isResetPassword });
+  };
+
+  handleDisplayResetPassword = () => {
+    this.setState({ isResetPassword: true, tabNumber: 2 });
   };
 
   render() {
@@ -36,10 +46,12 @@ class AuthModal extends React.Component {
         >
           <Tab label='Sign Up' className={classes.modalTab} />
           <Tab label='Log In' className={classes.modalTab} />
+          { this.state.isResetPassword ? <Tab label='Reset' className={classes.modalTab} /> : null }
         </Tabs>
         <DialogContent className={classes.modalContent}>
           {this.state.tabNumber === 0 ? <AuthForm isNewUser={true} handleClose={handleClose} /> : null}
-          {this.state.tabNumber === 1 ? <AuthForm isNewUser={false} handleClose={handleClose} /> : null}
+          {this.state.tabNumber === 1 ? <AuthForm handleClose={handleClose} handleDisplayResetPassword={this.handleDisplayResetPassword} /> : null}
+          {this.state.tabNumber === 2 ? <AuthForm isResetPassword={true} handleClose={handleClose} /> : null}
         </DialogContent>
       </Dialog>
     );
