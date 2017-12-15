@@ -6,9 +6,25 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import { fromJS } from 'immutable';
 import { routerMiddleware } from 'react-router-redux';
 import createSagaMiddleware from 'redux-saga';
+import { reactReduxFirebase } from 'react-redux-firebase';
+import firebase from 'firebase';
 import createReducer from './reducers';
 
 const sagaMiddleware = createSagaMiddleware();
+
+const firebaseConfig = {
+  apiKey: 'AIzaSyDb5nNlMWHCpmxO1ZR4xzKRXRhFQlPhJIQ',
+  authDomain: 'playlysts.firebaseapp.com',
+  databaseURL: 'https://playlysts.firebaseio.com',
+  projectId: 'playlysts',
+  storageBucket: 'playlysts.appspot.com',
+  messagingSenderId: '501919569087'
+};
+firebase.initializeApp(firebaseConfig);
+
+const firebaseReduxConfig = {
+  userProfile: 'users',
+};
 
 export default function configureStore(initialState = {}, history) {
   // Create the store with two middlewares
@@ -21,6 +37,7 @@ export default function configureStore(initialState = {}, history) {
 
   const enhancers = [
     applyMiddleware(...middlewares),
+    reactReduxFirebase(firebase, firebaseReduxConfig),
   ];
 
   // If Redux DevTools Extension is installed use it, otherwise use Redux compose

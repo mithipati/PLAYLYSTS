@@ -1,9 +1,9 @@
 
 const styles = theme => ({
   root: {
-    gridArea: '2 / 2 / span 1 / span 1',
-    backgroundColor: '#616161',
-    padding: '20px 30px 0 30px',
+    gridArea: '2 / 1 / span 2 / span 3',
+    backgroundColor: theme.palette.primary[700],
+    padding: '50px 150px',
   },
   heading: {
     margin: '15px 0 30px 0',
