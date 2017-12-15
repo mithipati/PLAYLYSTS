@@ -2,7 +2,6 @@
 import React from 'react';
 import { compose } from 'redux';
 import { firebaseConnect } from 'react-redux-firebase'
-import { SubmissionError } from 'redux-form/immutable';
 import { Field, reduxForm } from 'redux-form/immutable';
 import { TextField } from 'redux-form-material-ui';
 import { FormGroup } from 'material-ui/Form';
@@ -19,7 +18,7 @@ class SettingsForm extends React.Component {
   handleSubmit = values => {
   };
 
-  handleLogout = (event) => {
+  handleLogout = event => {
     event.preventDefault();
 
     const { handleClose, firebase } = this.props;
@@ -53,7 +52,8 @@ class SettingsForm extends React.Component {
           />
         </FormGroup>
         <button type='submit' disabled={submitting} className='action-button'>
-          { !this.state.isSubmitting
+          {
+            !this.state.isSubmitting
             ? <span>SAVE</span>
             : <CircularProgress size={25} thickness={3.0} color='accent'/>
           }

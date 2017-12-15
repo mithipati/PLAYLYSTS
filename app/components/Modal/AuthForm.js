@@ -150,38 +150,34 @@ class AuthForm extends React.Component {
           {
             isResetPassword
             ? null
-            : [
-                <Field
-                  name='password'
-                  label='Password'
-                  key='input'
-                  component={TextField}
-                  InputLabelProps={{className: classes.label}}
-                  InputProps={{className: classes.input}}
-                  className={classNames(classes.textArea, { [classes.loginTextArea]: !isNewUser })}
-                  fullWidth
-                  type='password'
-                />,
-                !isNewUser
-                  ? <FormHelperText key='helperText' onClick={handleSubmit(handleDisplayResetPassword)} className={classes.helperText}>
-                      Reset Password
-                    </FormHelperText>
-                  : null
-              ]
+            : <Field
+                name='password'
+                label='Password'
+                component={TextField}
+                InputLabelProps={{className: classes.label}}
+                InputProps={{className: classes.input}}
+                className={classNames(classes.textArea, { [classes.loginTextArea]: !isNewUser })}
+                fullWidth
+                type='password'
+                />
           }
           {
             isNewUser
             ? <Field
-              name='password_confirmation'
-              label='Confirm Password'
-              component={TextField}
-              InputLabelProps={{className: classes.label}}
-              InputProps={{className: classes.input}}
-              className={classes.textArea}
-              fullWidth
-              type='password'
-            />
-            : null
+                name='password_confirmation'
+                label='Confirm Password'
+                component={TextField}
+                InputLabelProps={{className: classes.label}}
+                InputProps={{className: classes.input}}
+                className={classes.textArea}
+                fullWidth
+                type='password'
+              />
+            : !isResetPassword
+              ? <FormHelperText onClick={handleSubmit(handleDisplayResetPassword)} className={classes.helperText}>
+                  Reset Password
+                </FormHelperText>
+              : null
           }
         </FormGroup>
         {

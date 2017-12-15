@@ -49,9 +49,21 @@ class AuthModal extends React.Component {
           { this.state.isResetPassword ? <Tab label='Reset' className={classes.modalTab} /> : null }
         </Tabs>
         <DialogContent className={classes.modalContent}>
-          {this.state.tabNumber === 0 ? <AuthForm isNewUser={true} handleClose={handleClose} /> : null}
-          {this.state.tabNumber === 1 ? <AuthForm handleClose={handleClose} handleDisplayResetPassword={this.handleDisplayResetPassword} /> : null}
-          {this.state.tabNumber === 2 ? <AuthForm isResetPassword={true} handleClose={handleClose} /> : null}
+          {
+            this.state.tabNumber === 0
+              ? <AuthForm isNewUser={true} handleClose={handleClose} />
+              : null
+          }
+          {
+            this.state.tabNumber === 1
+              ? <AuthForm handleClose={handleClose} handleDisplayResetPassword={this.handleDisplayResetPassword} />
+              : null
+          }
+          {
+            this.state.tabNumber === 2
+              ? <AuthForm isResetPassword={true} handleClose={handleClose} />
+              : null
+          }
         </DialogContent>
       </Dialog>
     );
