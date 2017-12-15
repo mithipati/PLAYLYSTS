@@ -6,37 +6,22 @@ const styles = theme => ({
     backgroundColor: theme.palette.primary[700],
     overflowY: 'scroll',
   },
-  addSongContainer: {
-    display: 'flex',
-  },
   heading: {
     margin: '15px 0 10px 0',
     fontSize: 35,
     color: theme.palette.primary[200],
   },
-  formControl: {
-    margin: theme.spacing.unit,
-    marginLeft: 25,
-    width: 500,
-    height: 65,
-    minWidth: 400,
-  },
-  input: {
-    marginTop: 12,
-    '&:after': {
-      backgroundColor: theme.palette.primary[900],
-    },
+  label: {
     color: theme.palette.primary[200],
     fontWeight: 300,
+    fontSize: 35,
   },
-  errorMessage: {
-    display: 'none',
-  },
-  error: {
-    display: 'block',
-    color: theme.palette.error[500],
+  input: {
+    marginTop: 30,
+    color: theme.palette.primary[200],
+    fontWeight: 300,
     '&:after': {
-      backgroundColor: theme.palette.error[500],
+      backgroundColor: theme.palette.primary[900],
     },
   },
   helperText: {

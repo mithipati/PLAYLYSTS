@@ -2,8 +2,8 @@
 import React from 'react';
 import { compose } from 'redux';
 import { firebaseConnect } from 'react-redux-firebase'
-import { SubmissionError } from 'redux-form/immutable';
 import { Field, reduxForm } from 'redux-form/immutable';
+import { SubmissionError } from 'redux-form/immutable';
 import { TextField } from 'redux-form-material-ui';
 import { FormGroup } from 'material-ui/Form';
 import { CircularProgress } from 'material-ui/Progress';
@@ -218,7 +218,7 @@ class AuthForm extends React.Component {
 export default compose(
   withStyles(styles),
   reduxForm({
-    form: 'auth',
+    form: 'auth'
   }),
   firebaseConnect(),
 )(AuthForm);

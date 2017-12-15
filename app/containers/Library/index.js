@@ -3,25 +3,27 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
+import { Field, reduxForm } from 'redux-form/immutable';
 
 import injectReducer from "../../utils/injectReducer";
 import reducer from './reducer';
 import injectSaga from '../../utils/injectSaga';
 import saga from '../../services/parser';
 
-import { addSong, removeSong, changeSongLink } from './actions';
-import { makeSelectSongs, makeSelectSongLink, makeSelectIsSongLinkError } from './selectors';
+import { addTrack, removeTrack, changeTrackURL } from './actions';
+import { makeSelectTracks, makeSelectTrackURL, makeSelectIsTrackURLError } from './selectors';
 
 import Grid from 'material-ui/Grid';
-import { FormControl, FormHelperText } from 'material-ui/Form';
+import { FormHelperText } from 'material-ui/Form';
 import Typography from 'material-ui/Typography';
-import Input from 'material-ui/Input';
+import { TextField } from 'redux-form-material-ui';
 
 import Table from '../../components/Table';
 
 import classNames from 'classnames';
 import { withStyles } from 'material-ui/styles';
 import styles from './style';
+
 
 class Library extends React.Component {
 
@@ -31,33 +33,28 @@ class Library extends React.Component {
     return (
       <div className={classes.root}>
         <Grid container item={true}>
-          <Grid className={classes.addSongContainer} item xs={12} sm={12}>
-            <Typography type='display2' className={classes.heading}>
-              Add Song
-            </Typography>
-            <FormControl className={classes.formControl}>
-              <Input
-                placeholder='Enter a valid YouTube, SoundCloud, or Spotify song link'
+          <Grid item xs={12} sm={12}>
+              <Field
+                name='track'
+                label='Add Track'
+                component={TextField}
+                InputProps={{
+                  className: classes.input,
+                  autoComplete: false,
+                  autoCorrect: false,
+                  autoCapitalize: false,
+                  spellCheck: false,
+                }}
+                InputLabelProps={{
+                  className: classes.label,
+                }}
                 fullWidth
-                className={classNames(classes.input, { [classes.error]: this.props.isSongLinkError })}
-                autoComplete={false}
-                autoCorrect={false}
-                autoCapitalize={false}
-                spellCheck={false}
-                error
-                value={this.props.songLink}
-                onChange={(event) => this.props.onChangeSongLink(event.target.value)}
-                onKeyPress={(event) => { if (event.key === 'Enter') this.props.onAddSong(event.target.value) }}
               />
-              <FormHelperText
-                className={classNames(classes.errorMessage, { [classes.error]: this.props.isSongLinkError })}
-              >
-                Invalid link. Please enter a new link and try again.
-              </FormHelperText>
+                {/*onChange={(event) => this.props.onChangeTrackURL(event.target.value)}*/}
+                {/*onKeyPress={(event) => { if (event.key === 'Enter') this.props.onAddTrack(event.target.value) }}*/}
               <FormHelperText className={classes.helperText}>
                 Need help?
               </FormHelperText>
-            </FormControl>
           </Grid>
           <Grid item xs={12} sm={12}>
             <Typography type='display2' className={classes.heading}>
@@ -65,8 +62,7 @@ class Library extends React.Component {
             </Typography>
           </Grid>
           <Grid item xs={12} sm={12}>
-            <div id='video-player'></div>
-            <Table songs={this.props.songs} onRemoveSong={this.props.onRemoveSong} />
+            <Table tracks={this.props.tracks} onRemoveTrack={this.props.onRemoveTrack} />
           </Grid>
         </Grid>
       </div>
@@ -76,16 +72,16 @@ class Library extends React.Component {
 
 export function mapDispatchToProps(dispatch) {
   return {
-    onAddSong: (url) => dispatch(addSong(url)),
-    onChangeSongLink: (url) => dispatch(changeSongLink(url)),
-    onRemoveSong: (song) => dispatch(removeSong(song)),
+    onAddTrack: (trackURL) => dispatch(addTrack(trackURL)),
+    onChangeTrackURL: (trackURL) => dispatch(changeTrackURL(trackURL)),
+    onRemoveTrack: (track) => dispatch(removeTrack(track)),
   };
 }
 
 const mapStateToProps = createStructuredSelector({
-  songs: makeSelectSongs(),
-  songLink: makeSelectSongLink(),
-  isSongLinkError: makeSelectIsSongLinkError(),
+  tracks: makeSelectTracks(),
+  trackLink: makeSelectTrackURL(),
+  isTrackURLError: makeSelectIsTrackURLError(),
 });
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);
@@ -97,4 +93,7 @@ export default compose(
   withReducer,
   withSaga,
   withConnect,
+  reduxForm({
+    form: 'track'
+  }),
 )(Library);

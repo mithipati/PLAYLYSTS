@@ -4,9 +4,9 @@ import { select, put, call, takeLatest } from 'redux-saga/effects';
 import request from '../utils/request';
 import { SOUNDCLOUD_CLIENT_ID } from '../secret';
 
-import { ADD_SONG } from '../containers/Library/constants';
-import { makeSelectSongLink } from '../containers/Library/selectors';
-import { addSongSuccess, addSongError } from '../containers/Library/actions';
+import { ADD_TRACK } from '../containers/Library/constants';
+import { makeSelectTrackURL } from '../containers/Library/selectors';
+import { addTrackSuccess, addTrackError } from '../containers/Library/actions';
 import { fromJS } from 'immutable';
 
 function _getCurrentDate() {
@@ -17,7 +17,7 @@ function _getCurrentDate() {
 function* getTrack() {
   let track, errorMessage;
 
-  const trackLink = yield select(makeSelectSongLink());
+  const trackLink = yield select(makeSelectTrackURL());
   const requestURL = `http://api.soundcloud.com/resolve?url=${trackLink}&client_id=${SOUNDCLOUD_CLIENT_ID}`;
 
   try {
@@ -30,16 +30,16 @@ function* getTrack() {
       source: 'SoundCloud',
       created_at: _getCurrentDate(),
     });
-    yield put(addSongSuccess(track));
+    yield put(addTrackSuccess(track));
 
   } catch (error) {
 
     errorMessage = error.message;
-    yield put(addSongError(errorMessage));
+    yield put(addTrackError(errorMessage));
 
   }
 }
 
 export default function* parse() {
-  yield takeLatest(ADD_SONG, getTrack);
+  yield takeLatest(ADD_TRACK, getTrack);
 }

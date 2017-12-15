@@ -1,36 +1,36 @@
 
-import { ADD_SONG, ADD_SONG_SUCCESS, ADD_SONG_ERROR, REMOVE_SONG, CHANGE_SONG_LINK } from './constants';
+import { ADD_TRACK, ADD_TRACK_SUCCESS, ADD_TRACK_ERROR, REMOVE_TRACK, CHANGE_TRACK_URL } from './constants';
 
-export function addSong(url) {
+export function addTrack(trackURL) {
   return {
-    type: ADD_SONG,
-    url
+    type: ADD_TRACK,
+    trackURL
   }
 }
 
-export function addSongSuccess(song) {
+export function addTrackSuccess(track) {
   return {
-    type: ADD_SONG_SUCCESS,
-    song,
+    type: ADD_TRACK_SUCCESS,
+    track,
   }
 }
 
-export function addSongError() {
+export function addTrackError() {
   return {
-    type: ADD_SONG_ERROR,
+    type: ADD_TRACK_ERROR,
   }
 }
 
-export function removeSong(song) {
+export function removeTrack(track) {
   return {
-    type: REMOVE_SONG,
-    song,
+    type: REMOVE_TRACK,
+    track,
   };
 }
 
-export function changeSongLink(url) {
+export function changeTrackURL(trackURL) {
   return {
-    type: CHANGE_SONG_LINK,
-    url,
+    type: CHANGE_TRACK_URL,
+    trackURL,
   }
 }
