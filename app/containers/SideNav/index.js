@@ -99,7 +99,7 @@ class SideNav extends React.Component {
             )
           }
         >
-          MY SONGS
+          LIBRARY
         </Typography>
       </Link>
     );

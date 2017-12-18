@@ -8,19 +8,19 @@ const makeSelectTracks = () => createSelector(
   (libraryState) => libraryState.get('tracks')
 );
 
-const makeSelectTrackURL = () => createSelector(
-  selectLibrary,
-  (libraryState) => libraryState.get('trackURL')
-);
-
 const makeSelectIsTrackURLError = () =>  createSelector(
   selectLibrary,
   (libraryState) => libraryState.get('isTrackURLError')
 );
 
+const makeSelectTrackURLErrorMessage = () => createSelector(
+  selectLibrary,
+  (libraryState) => libraryState.get('trackURLErrorMessage')
+);
+
 export {
   selectLibrary,
   makeSelectTracks,
-  makeSelectTrackURL,
   makeSelectIsTrackURLError,
+  makeSelectTrackURLErrorMessage,
 };

@@ -1,5 +1,5 @@
 
-import { ADD_TRACK, ADD_TRACK_SUCCESS, ADD_TRACK_ERROR, REMOVE_TRACK, CHANGE_TRACK_URL } from './constants';
+import { ADD_TRACK, ADD_TRACK_SUCCESS, ADD_TRACK_ERROR, REMOVE_TRACK } from './constants';
 
 export function addTrack(trackURL) {
   return {
@@ -15,9 +15,10 @@ export function addTrackSuccess(track) {
   }
 }
 
-export function addTrackError() {
+export function addTrackError(message) {
   return {
     type: ADD_TRACK_ERROR,
+    message
   }
 }
 
@@ -26,11 +27,4 @@ export function removeTrack(track) {
     type: REMOVE_TRACK,
     track,
   };
-}
-
-export function changeTrackURL(trackURL) {
-  return {
-    type: CHANGE_TRACK_URL,
-    trackURL,
-  }
 }

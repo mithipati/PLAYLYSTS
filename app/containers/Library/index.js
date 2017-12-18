@@ -3,19 +3,20 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
-import { Field, reduxForm } from 'redux-form/immutable';
+import { reduxForm, Field, SubmissionError } from 'redux-form/immutable';
 
 import injectReducer from "../../utils/injectReducer";
 import reducer from './reducer';
 import injectSaga from '../../utils/injectSaga';
 import saga from '../../services/parser';
 
-import { addTrack, removeTrack, changeTrackURL } from './actions';
-import { makeSelectTracks, makeSelectTrackURL, makeSelectIsTrackURLError } from './selectors';
+import { addTrack, removeTrack } from './actions';
+import { makeSelectTracks, makeSelectIsTrackURLError, makeSelectTrackURLErrorMessage } from './selectors';
 
 import Grid from 'material-ui/Grid';
 import { FormHelperText } from 'material-ui/Form';
 import Typography from 'material-ui/Typography';
+import { CircularProgress } from 'material-ui/Progress';
 import { TextField } from 'redux-form-material-ui';
 
 import Table from '../../components/Table';
@@ -26,14 +27,34 @@ import styles from './style';
 
 
 class Library extends React.Component {
+  state = {
+    isSubmitting: false,
+  };
+
+  handleSubmit = values => {
+    const track = values.get('track');
+
+    this.setState({ isSubmitting: true });
+
+    if (!track){
+      this.setState({ isSubmitting: false });
+
+      throw new SubmissionError({
+        track: 'Required'
+      });
+    }
+
+    this.props.addTrack(track);
+  };
 
   render() {
-    const { classes } = this.props;
+    const { handleSubmit, isTrackURLError, trackURLErrorMessage, submitting, classes } = this.props;
 
     return (
       <div className={classes.root}>
         <Grid container item={true}>
           <Grid item xs={12} sm={12}>
+            <form onSubmit={handleSubmit(this.handleSubmit)}>
               <Field
                 name='track'
                 label='Add Track'
@@ -50,19 +71,29 @@ class Library extends React.Component {
                 }}
                 fullWidth
               />
-                {/*onChange={(event) => this.props.onChangeTrackURL(event.target.value)}*/}
-                {/*onKeyPress={(event) => { if (event.key === 'Enter') this.props.onAddTrack(event.target.value) }}*/}
+              { submitting
+                ? <CircularProgress size={25} thickness={3.0} color='accent' className={classes.loader} />
+                : null
+              }
+              {
+                isTrackURLError
+                ? <FormHelperText className={classes.errorText}>
+                    { trackURLErrorMessage }
+                  </FormHelperText>
+                : null
+              }
               <FormHelperText className={classes.helperText}>
                 Need help?
               </FormHelperText>
+            </form>
           </Grid>
           <Grid item xs={12} sm={12}>
             <Typography type='display2' className={classes.heading}>
-              My Songs
+              Library
             </Typography>
           </Grid>
           <Grid item xs={12} sm={12}>
-            <Table tracks={this.props.tracks} onRemoveTrack={this.props.onRemoveTrack} />
+            <Table tracks={this.props.tracks} onRemoveTrack={this.props.removeTrack} />
           </Grid>
         </Grid>
       </div>
@@ -72,16 +103,15 @@ class Library extends React.Component {
 
 export function mapDispatchToProps(dispatch) {
   return {
-    onAddTrack: (trackURL) => dispatch(addTrack(trackURL)),
-    onChangeTrackURL: (trackURL) => dispatch(changeTrackURL(trackURL)),
-    onRemoveTrack: (track) => dispatch(removeTrack(track)),
+    addTrack: (trackURL) => dispatch(addTrack(trackURL)),
+    removeTrack: (track) => dispatch(removeTrack(track)),
   };
 }
 
 const mapStateToProps = createStructuredSelector({
   tracks: makeSelectTracks(),
-  trackLink: makeSelectTrackURL(),
   isTrackURLError: makeSelectIsTrackURLError(),
+  trackURLErrorMessage: makeSelectTrackURLErrorMessage(),
 });
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);
@@ -90,10 +120,10 @@ const withSaga = injectSaga({ key: 'library', saga });
 
 export default compose(
   withStyles(styles),
-  withReducer,
-  withSaga,
-  withConnect,
   reduxForm({
     form: 'track'
   }),
+  withReducer,
+  withSaga,
+  withConnect,
 )(Library);

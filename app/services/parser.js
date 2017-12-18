@@ -1,29 +1,34 @@
 
-import { select, put, call, takeLatest } from 'redux-saga/effects';
+import { put, call, takeLatest } from 'redux-saga/effects';
+import { fromJS } from 'immutable';
+import { startSubmit, stopSubmit, reset } from 'redux-form/immutable';
 
 import request from '../utils/request';
 import { SOUNDCLOUD_CLIENT_ID } from '../secret';
 
 import { ADD_TRACK } from '../containers/Library/constants';
-import { makeSelectTrackURL } from '../containers/Library/selectors';
-import { addTrackSuccess, addTrackError } from '../containers/Library/actions';
-import { fromJS } from 'immutable';
+import { addTrackSuccess } from '../containers/Library/actions';
 
 function _getCurrentDate() {
   const today = new Date();
   return `${today.getMonth() + 1} / ${today.getDate()} / ${today.getFullYear()}`;
 }
 
-function* getTrack() {
-  let track, errorMessage;
+function* getTrack({ trackURL }) {
+  yield put(startSubmit('track'));
 
-  const trackLink = yield select(makeSelectTrackURL());
-  const requestURL = `http://api.soundcloud.com/resolve?url=${trackLink}&client_id=${SOUNDCLOUD_CLIENT_ID}`;
+  const requestURL = `http://api.soundcloud.com/resolve?url=${trackURL}&client_id=${SOUNDCLOUD_CLIENT_ID}`;
 
   try {
 
     const trackData = yield call(request, requestURL);
-    track = fromJS({
+
+    if (trackData.kind !== 'track') {
+      yield put(stopSubmit('track', { track: 'Must be a valid track link.' }));
+      return false;
+    }
+
+    const track = fromJS({
       id: Math.random(),
       title: trackData.title,
       artist: trackData.user.username,
@@ -31,11 +36,17 @@ function* getTrack() {
       created_at: _getCurrentDate(),
     });
     yield put(addTrackSuccess(track));
+    yield put(reset('track'));
 
   } catch (error) {
 
-    errorMessage = error.message;
-    yield put(addTrackError(errorMessage));
+    let errorMessage = error.message;
+
+    if (error.message === 'Not Found') {
+      errorMessage = 'Track could not be found. Please try another track.'
+    }
+
+    yield put(stopSubmit('track', { track: errorMessage }));
 
   }
 }

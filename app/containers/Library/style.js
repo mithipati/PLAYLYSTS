@@ -17,12 +17,18 @@ const styles = theme => ({
     fontSize: 35,
   },
   input: {
-    marginTop: 30,
+    marginTop: '30px !important',
     color: theme.palette.primary[200],
     fontWeight: 300,
     '&:after': {
       backgroundColor: theme.palette.primary[900],
     },
+  },
+  loader: {
+    marginTop: 10,
+  },
+  errorText: {
+    color: 'red',
   },
   helperText: {
     width: 'max-content',
