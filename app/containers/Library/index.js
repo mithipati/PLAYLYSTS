@@ -11,7 +11,7 @@ import injectSaga from '../../utils/injectSaga';
 import saga from '../../services/parser';
 
 import { addTrack, removeTrack } from './actions';
-import { makeSelectTracks, makeSelectIsTrackURLError, makeSelectTrackURLErrorMessage } from './selectors';
+import { makeSelectTracks } from './selectors';
 
 import Grid from 'material-ui/Grid';
 import { FormHelperText } from 'material-ui/Form';
@@ -21,10 +21,8 @@ import { TextField } from 'redux-form-material-ui';
 
 import Table from '../../components/Table';
 
-import classNames from 'classnames';
 import { withStyles } from 'material-ui/styles';
 import styles from './style';
-
 
 class Library extends React.Component {
   state = {
@@ -48,7 +46,7 @@ class Library extends React.Component {
   };
 
   render() {
-    const { handleSubmit, isTrackURLError, trackURLErrorMessage, submitting, classes } = this.props;
+    const { handleSubmit, submitting, classes } = this.props;
 
     return (
       <div className={classes.root}>
@@ -73,13 +71,6 @@ class Library extends React.Component {
               />
               { submitting
                 ? <CircularProgress size={25} thickness={3.0} color='accent' className={classes.loader} />
-                : null
-              }
-              {
-                isTrackURLError
-                ? <FormHelperText className={classes.errorText}>
-                    { trackURLErrorMessage }
-                  </FormHelperText>
                 : null
               }
               <FormHelperText className={classes.helperText}>
@@ -110,8 +101,6 @@ export function mapDispatchToProps(dispatch) {
 
 const mapStateToProps = createStructuredSelector({
   tracks: makeSelectTracks(),
-  isTrackURLError: makeSelectIsTrackURLError(),
-  trackURLErrorMessage: makeSelectTrackURLErrorMessage(),
 });
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);

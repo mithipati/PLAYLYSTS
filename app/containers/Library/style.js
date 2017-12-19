@@ -9,11 +9,12 @@ const styles = theme => ({
   heading: {
     margin: '15px 0 10px 0',
     fontSize: 35,
+    fontWeight: 200,
     color: theme.palette.primary[200],
   },
   label: {
     color: theme.palette.primary[200],
-    fontWeight: 300,
+    fontWeight: 200,
     fontSize: 35,
   },
   input: {

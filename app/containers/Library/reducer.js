@@ -1,6 +1,6 @@
 
 import { fromJS } from 'immutable';
-import { ADD_TRACK_SUCCESS, REMOVE_TRACK, ADD_TRACK_ERROR } from './constants';
+import { ADD_TRACK_SUCCESS, REMOVE_TRACK } from './constants';
 
 // TODO remove let TRACKS
 const today = new Date();
@@ -17,21 +17,12 @@ for (let i = 0; i < 5; i++) {
 
 const initialState = fromJS({
   tracks: TRACKS,
-  isTrackURLError: false,
-  trackURLErrorMessage: '',
 });
 
 function libraryReducer(state = initialState, action) {
   switch (action.type) {
     case ADD_TRACK_SUCCESS:
-      return state
-        .set('isTrackURLError', false)
-        .set('trackURLErrorMessage', '')
-        .update('tracks', tracks => tracks.unshift(action.track));
-    case ADD_TRACK_ERROR:
-      return state
-        .set('isTrackURLError', true)
-        .set('trackURLErrorMessage', action.message);
+      return state.update('tracks', tracks => tracks.unshift(action.track));
     case REMOVE_TRACK:
       const index = state.get('tracks').indexOf(action.track);
       return state.update('tracks', tracks => tracks.delete(index));
