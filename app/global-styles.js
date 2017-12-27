@@ -64,12 +64,17 @@ injectGlobal`
     -moz-transition: all .1s ease;
     transition: all .1s ease;
     
+    &.spotify {
+      width: 50%;
+    }
+    
     &:hover {
       border: 2px solid #40C4FF;  
     }
     
     &:focus {
       outline: none;
+      border: 2px solid #40C4FF;  
     }
     
     &.error {
@@ -77,6 +82,10 @@ injectGlobal`
       color: #D50000;
       
       &:hover {
+        border: 2px solid #D50000;  
+      }
+      
+      &:focus {
         border: 2px solid #D50000;  
       }
     }

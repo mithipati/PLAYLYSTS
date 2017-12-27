@@ -28,15 +28,18 @@ const styles = theme => ({
   loader: {
     marginTop: 10,
   },
-  errorText: {
-    color: 'red',
-  },
   helperText: {
+    fontSize: '1rem',
     width: 'max-content',
     cursor: 'pointer',
     '&:hover': {
       color: theme.palette.primary[200],
     }
+  },
+  helperTextError: {
+    fontSize: '1rem',
+    lineHeight: '20px',
+    color: theme.palette.error.A400,
   },
 });
 

@@ -2,24 +2,22 @@
 import { put, call, takeLatest } from 'redux-saga/effects';
 import { fromJS } from 'immutable';
 import { startSubmit, stopSubmit, reset } from 'redux-form/immutable';
-import parse from 'url-parse';
 
 import request from '../utils/request';
-import { SOUNDCLOUD_CLIENT_ID, GOOGLE_API_KEY } from '../secret';
-
-import { _getTrackSource, _getCurrentDate } from './helpers';
-import { SOUNDCLOUD, YOUTUBE, INVALID_TRACK, NOT_FOUND } from './constants';
+import { _getTrackSource, _getErrorMessage, _getCurrentDate } from './helpers';
+import { SOUNDCLOUD, YOUTUBE, SPOTIFY, ERROR_INVALID_TRACK, ERROR_NOT_FOUND, ERROR_CONNECT_SPOTIFY } from './constants';
 import { ADD_TRACK } from '../containers/Library/constants';
 import { addTrackSuccess } from '../containers/Library/actions';
 
 function* getSoundCloudTrack(trackURL) {
   try {
 
-    const requestURL = `http://api.soundcloud.com/resolve?url=${trackURL}&client_id=${SOUNDCLOUD_CLIENT_ID}`;
-    const trackData = yield call(request, requestURL);
+    const requestURL = `/api/parse/soundcloud?track=${trackURL}`;
+    const response = yield call(request, requestURL);
+    const trackData = response.data;
 
     if (trackData.kind !== 'track') {
-      yield put(stopSubmit('track', { track: INVALID_TRACK }));
+      yield put(stopSubmit('track', { track: ERROR_INVALID_TRACK }));
       return false;
     }
 
@@ -35,13 +33,7 @@ function* getSoundCloudTrack(trackURL) {
 
   } catch (error) {
 
-    let errorMessage = error.message;
-
-    if (error.message === 'Not Found') {
-      errorMessage = NOT_FOUND
-    }
-
-    yield put(stopSubmit('track', { track: errorMessage }));
+    yield put(stopSubmit('track', { track: _getErrorMessage(error) }));
 
   }
 }
@@ -49,20 +41,12 @@ function* getSoundCloudTrack(trackURL) {
 function* getYouTubeTrack(trackURL) {
   try {
 
-    const parsedURL = parse(trackURL, true);
-    if (!parsedURL.query.hasOwnProperty('v')) {
-      yield put(stopSubmit('track', { track: INVALID_TRACK }));
-      return false;
-    }
-
-    const videoID = parsedURL.query.v;
-    const requestURL = 'https://www.googleapis.com/youtube/v3/videos?' +
-      `part=snippet%2CcontentDetails&id=${videoID}&key=${GOOGLE_API_KEY}`;
-    let trackData = yield call(request, requestURL);
-    trackData = trackData.items[0];
+    const requestURL = `/api/parse/youtube?track=${trackURL}`;
+    const response = yield call(request, requestURL);
+    const trackData = response.data;
 
     if (trackData.kind !== 'youtube#video') {
-      yield put(stopSubmit('track', { track: INVALID_TRACK }));
+      yield put(stopSubmit('track', { track: ERROR_INVALID_TRACK }));
       return false;
     }
 
@@ -78,9 +62,14 @@ function* getYouTubeTrack(trackURL) {
 
   } catch (error) {
 
-    yield put(stopSubmit('track', { track: error.message }));
+    yield put(stopSubmit('track', { track: _getErrorMessage(error) }));
 
   }
+}
+
+function* getSpotifyTrack(trackURL) {
+
+    yield put(stopSubmit('track', { track: ERROR_CONNECT_SPOTIFY }));
 }
 
 function* getTrack({ trackURL }) {
@@ -93,11 +82,13 @@ function* getTrack({ trackURL }) {
       return yield getSoundCloudTrack(trackURL);
     case YOUTUBE:
       return yield getYouTubeTrack(trackURL);
+    case SPOTIFY:
+      return yield getSpotifyTrack(trackURL);
     default:
-      return yield put(stopSubmit('track', { track: NOT_FOUND }));
+      return yield put(stopSubmit('track', { track: ERROR_NOT_FOUND }));
   }
 }
 
-export default function* parseURL() {
+export default function* parse() {
   yield takeLatest(ADD_TRACK, getTrack);
 }

@@ -4,6 +4,7 @@ build
 node_modules
 stats.json
 app/secret.js
+internals/secret.js
 
 # Cruft
 .DS_Store

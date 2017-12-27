@@ -7,7 +7,8 @@ const styles = theme => ({
     backgroundColor: theme.palette.primary[900],
   },
   modalContent: {
-    width: '100%',
+    // width: '100%',
+    width: 200,
     minWidth: 400,
     paddingTop: 10,
     backgroundColor: theme.palette.primary[900],

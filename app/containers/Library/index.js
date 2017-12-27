@@ -25,18 +25,11 @@ import { withStyles } from 'material-ui/styles';
 import styles from './style';
 
 class Library extends React.Component {
-  state = {
-    isSubmitting: false,
-  };
 
   handleSubmit = values => {
     const track = values.get('track');
 
-    this.setState({ isSubmitting: true });
-
     if (!track){
-      this.setState({ isSubmitting: false });
-
       throw new SubmissionError({
         track: 'Required'
       });
@@ -67,11 +60,13 @@ class Library extends React.Component {
                 InputLabelProps={{
                   className: classes.label,
                 }}
+                FormHelperTextProps={{
+                  className: classes.helperTextError,
+                }}
                 fullWidth
               />
-              { submitting
-                ? <CircularProgress size={25} thickness={3.0} color='accent' className={classes.loader} />
-                : null
+              {
+                submitting && <CircularProgress size={25} thickness={3.0} color='accent' className={classes.loader} />
               }
               <FormHelperText className={classes.helperText}>
                 Need help?
@@ -105,7 +100,7 @@ const mapStateToProps = createStructuredSelector({
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);
 const withReducer = injectReducer({ key: 'library', reducer });
-const withSaga = injectSaga({ key: 'library', saga });
+const withSaga = injectSaga({ key: 'services', saga });
 
 export default compose(
   withStyles(styles),

@@ -8,7 +8,7 @@ const theme = createMuiTheme({
   palette: {
     primary: grey,
     secondary: { ...lightBlue, A200: '#40C4FF' },
-    error: { ...red, A700: '#D50000' }
+    error: { ...red, A400: '#FF1744' },
   },
   typography: {
     fontFamily: 'Roboto, "Helvetica Neue"',

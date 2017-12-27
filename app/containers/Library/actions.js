@@ -5,14 +5,14 @@ export function addTrack(trackURL) {
   return {
     type: ADD_TRACK,
     trackURL
-  }
+  };
 }
 
 export function addTrackSuccess(track) {
   return {
     type: ADD_TRACK_SUCCESS,
     track,
-  }
+  };
 }
 
 export function removeTrack(track) {
