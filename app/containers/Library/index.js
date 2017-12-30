@@ -1,17 +1,18 @@
 
 import React from 'react';
-import { connect } from 'react-redux';
 import { compose } from 'redux';
+import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { reduxForm, Field, SubmissionError } from 'redux-form/immutable';
 
-import injectReducer from "../../utils/injectReducer";
+import injectReducer from '../../utils/injectReducer';
 import reducer from './reducer';
 import injectSaga from '../../utils/injectSaga';
-import saga from '../../services/parser';
+import parser from '../../services/parser';
 
 import { addTrack, removeTrack } from './actions';
 import { makeSelectTracks } from './selectors';
+import Redirect from './Redirect';
 
 import Grid from 'material-ui/Grid';
 import { FormHelperText } from 'material-ui/Form';
@@ -43,6 +44,7 @@ class Library extends React.Component {
 
     return (
       <div className={classes.root}>
+        <Redirect/>
         <Grid container item={true}>
           <Grid item xs={12} sm={12}>
             <form onSubmit={handleSubmit(this.handleSubmit)}>
@@ -89,8 +91,8 @@ class Library extends React.Component {
 
 export function mapDispatchToProps(dispatch) {
   return {
-    addTrack: (trackURL) => dispatch(addTrack(trackURL)),
-    removeTrack: (track) => dispatch(removeTrack(track)),
+    addTrack: trackURL => dispatch(addTrack(trackURL)),
+    removeTrack: track => dispatch(removeTrack(track)),
   };
 }
 
@@ -100,7 +102,7 @@ const mapStateToProps = createStructuredSelector({
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);
 const withReducer = injectReducer({ key: 'library', reducer });
-const withSaga = injectSaga({ key: 'services', saga });
+const withParserSaga = injectSaga({ key: 'parser', saga: parser });
 
 export default compose(
   withStyles(styles),
@@ -108,6 +110,6 @@ export default compose(
     form: 'track'
   }),
   withReducer,
-  withSaga,
+  withParserSaga,
   withConnect,
 )(Library);

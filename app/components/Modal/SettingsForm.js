@@ -10,17 +10,15 @@ import { TextField } from 'redux-form-material-ui';
 import { FormGroup } from 'material-ui/Form';
 import { CircularProgress } from 'material-ui/Progress';
 
-import { spotifyOAuth } from '../../containers/App/actions';
-import { makeSelectAuth } from '../../containers/App/selectors';
+import { initOAuth } from '../../containers/App/actions';
 import injectSaga from '../../utils/injectSaga';
-import saga from '../../services/oauth';
+import oauth from '../../services/oauth';
 
 import { withStyles } from 'material-ui/styles';
 import styles from './style';
 
 class SettingsForm extends React.Component {
   state = {
-    isSubmitting: false,
     isSpotifySubmitting: false,
   };
 
@@ -28,7 +26,8 @@ class SettingsForm extends React.Component {
   };
 
   handleSpotifySubmit = () => {
-    this.props.spotifyOAuth();
+    this.setState({ isSpotifySubmitting: true });
+    this.props.initOAuth('spotify');
   };
 
   handleLogout = event => {
@@ -78,7 +77,7 @@ class SettingsForm extends React.Component {
         />
         <button type='submit' disabled={submitting} className='action-button'>
           {
-            !this.state.isSubmitting
+            !submitting
             ? <span>SAVE</span>
             : <CircularProgress size={25} thickness={3.0} color='accent'/>
           }
@@ -93,16 +92,12 @@ class SettingsForm extends React.Component {
 
 export function mapDispatchToProps(dispatch) {
   return {
-    spotifyOAuth: () => dispatch(spotifyOAuth()),
+    initOAuth: code => dispatch(initOAuth(code)),
   };
 }
 
-const mapStateToProps = createStructuredSelector({
-  auth: makeSelectAuth(),
-});
-
-const withConnect = connect(mapStateToProps, mapDispatchToProps);
-const withSaga = injectSaga({ key: 'services', saga });
+const withConnect = connect(null, mapDispatchToProps);
+const withOAuthSaga = injectSaga({ key: 'oauth', saga: oauth });
 
 export default compose(
   withStyles(styles),
@@ -110,6 +105,6 @@ export default compose(
     form: 'settings'
   }),
   firebaseConnect(),
-  withSaga,
+  withOAuthSaga,
   withConnect,
 )(SettingsForm);

@@ -1,17 +1,17 @@
 
 import { put, call, takeLatest } from 'redux-saga/effects';
-import { fromJS } from 'immutable';
+import { replace } from 'react-router-redux';
+import { getFirebase } from 'react-redux-firebase';
 
 import request from '../utils/request';
 
-import { SPOTIFY_OAUTH } from '../containers/App/constants';
+import { INIT_OAUTH, COMPLETE_OAUTH } from '../containers/App/constants';
 
-function* getAuthorization() {
+function* initOAuth({ source }) {
   try {
 
-  const requestURL = '/api/parse';
-  const oauth = yield call(request, requestURL);
-  return oauth;
+    const { redirectURL } = yield call(request, `/api/oauth/${source}`);
+    window.location = redirectURL;
 
   } catch (error) {
 
@@ -20,6 +20,30 @@ function* getAuthorization() {
   }
 }
 
-export default function* authorize() {
-  yield takeLatest(SPOTIFY_OAUTH, getAuthorization);
+function* completeOAuth({ data: { source, code } }) {
+  try {
+
+    yield put(replace('/'));
+
+    const { accessToken, refreshToken } = yield call(request, `/api/oauth/${source}/redirect?code=${code}`);
+
+    yield getFirebase().updateProfile({
+      [`oauth/${source}/accessToken`]: accessToken,
+      [`oauth/${source}/refreshToken`]: refreshToken,
+    });
+
+    // dispatch success noty
+
+  } catch (error) {
+
+    console.log(error);
+
+  }
+}
+
+export default function* oauth() {
+  yield [
+    takeLatest(INIT_OAUTH, initOAuth),
+    takeLatest(COMPLETE_OAUTH, completeOAuth)
+  ];
 }

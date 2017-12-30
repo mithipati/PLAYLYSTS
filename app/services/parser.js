@@ -12,7 +12,7 @@ import { addTrackSuccess } from '../containers/Library/actions';
 function* getSoundCloudTrack(trackURL) {
   try {
 
-    const requestURL = `/api/parse/soundcloud?track=${trackURL}`;
+    const requestURL = `/api/parse/soundcloud?trackURL=${trackURL}`;
     const response = yield call(request, requestURL);
     const trackData = response.data;
 
@@ -41,7 +41,7 @@ function* getSoundCloudTrack(trackURL) {
 function* getYouTubeTrack(trackURL) {
   try {
 
-    const requestURL = `/api/parse/youtube?track=${trackURL}`;
+    const requestURL = `/api/parse/youtube?trackURL=${trackURL}`;
     const response = yield call(request, requestURL);
     const trackData = response.data;
 

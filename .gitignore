@@ -5,6 +5,7 @@ node_modules
 stats.json
 app/secret.js
 internals/secret.js
+internals/firebaseServiceAccountKey.json
 
 # Cruft
 .DS_Store
