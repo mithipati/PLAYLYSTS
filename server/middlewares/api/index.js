@@ -29,17 +29,18 @@ router.get('/parse/soundcloud', (req, res) => {
       client_id: SOUNDCLOUD_CLIENT_ID
     }
   })
-    .then(track => {
-      res.json({ data: track.data });
+    .then(response => {
+      res.json({ track: response.data });
     })
     .catch(error => {
-      logger.error(error);
-      res.status(400).end();
+      logger.error(error.response.statusText);
+      res.status(error.response.status).end();
     });
 });
 
 router.get('/parse/youtube', (req, res) => {
   const params = queryString.parse(queryString.extract(req.query.trackURL));
+  console.log(params);
 
   if (!params.v) {
     res.status(400).end();
@@ -48,16 +49,17 @@ router.get('/parse/youtube', (req, res) => {
 
   axios.get(YOUTUBE_TRACK_ENDPOINT, {
     params: {
-      part: 'snippet%2CcontentDetails',
+      part: 'snippet,contentDetails',
       id: videoID,
       key: YOUTUBE_API_KEY
     }
   })
-    .then(track => {
-      res.json({ data: track.data.items[0] });
+    .then(response => {
+      res.json({ track: response.data.items[0] });
     })
     .catch(error => {
       logger.error(error);
+      console.log(error);
       res.status(400).end();
     });
 });
@@ -94,8 +96,8 @@ router.get('/parse/spotify', (req, res) => {
       Authorization: `Bearer ${accessToken}`
     }
   })
-    .then(track => {
-      res.json({ data: track.data });
+    .then(response => {
+      res.json({ track: response.data });
     })
     .catch(error => {
       logger.error(error.response.statusText);

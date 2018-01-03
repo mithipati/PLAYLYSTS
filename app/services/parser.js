@@ -2,8 +2,8 @@
 import { put, call, takeLatest } from 'redux-saga/effects';
 import { fromJS } from 'immutable';
 import { startSubmit, stopSubmit, reset } from 'redux-form/immutable';
+import axios from 'axios';
 
-import request from '../utils/request';
 import {
   _getTrackSource,
   _getErrorMessage,
@@ -18,9 +18,8 @@ import { addTrackSuccess } from '../containers/Library/actions';
 function* getSoundCloudTrack(trackURL) {
   try {
 
-    const requestURL = `/api/parse/soundcloud?trackURL=${trackURL}`;
-    const response = yield call(request, requestURL);
-    const trackData = response.data;
+    const response = yield call(axios, `/api/parse/soundcloud?trackURL=${trackURL}`);
+    const trackData = response.data.track;
 
     if (trackData.kind !== 'track') {
       yield put(stopSubmit('track', { track: ERROR_INVALID_TRACK }));
@@ -48,9 +47,8 @@ function* getSoundCloudTrack(trackURL) {
 function* getYouTubeTrack(trackURL) {
   try {
 
-    const requestURL = `/api/parse/youtube?trackURL=${trackURL}`;
-    const response = yield call(request, requestURL);
-    const trackData = response.data;
+    const response = yield call(axios, `/api/parse/youtube?trackURL=${trackURL}`);
+    const trackData = response.data.track;
 
     if (trackData.kind !== 'youtube#video') {
       yield put(stopSubmit('track', { track: ERROR_INVALID_TRACK }));
@@ -83,20 +81,24 @@ function* getSpotifyTrack(trackURL) {
       return false;
     }
     const accessToken = user.oauth.spotify.accessToken;
+    const refreshToken = user.oauth.spotify.refreshToken;
 
     try {
 
-      const requestURL = `/api/parse/spotify?trackURL=${trackURL}`;
       const response = yield call(
-        request,
-        requestURL,
+        axios,
         {
+          url: '/api/parse/spotify',
           headers: {
-            'X-Spotify-Access-Token': accessToken
+            'X-Spotify-Access-Token': accessToken,
+            'X-Spotify-Refresh-Token': refreshToken,
+          },
+          params: {
+            trackURL
           }
         }
       );
-      const trackData = response.data;
+      const trackData = response.data.track;
 
       if (trackData.type !== 'track') {
         yield put(stopSubmit('track', { track: ERROR_INVALID_TRACK }));

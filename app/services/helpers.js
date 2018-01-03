@@ -6,9 +6,11 @@ import {
   SPOTIFY,
   NOT_FOUND,
   BAD_REQUEST,
+  FORBIDDEN,
   UNAUTHORIZED,
   ERROR_INVALID_TRACK,
   ERROR_NOT_FOUND,
+  ERROR_FORBIDDEN,
   ERROR_SPOTIFY_CONNECT,
 } from './constants';
 
@@ -25,13 +27,15 @@ export const _getTrackSource = (trackURL) => {
 };
 
 export const _getErrorMessage = (error) => {
-  const errorMessage = error.message;
+  const errorMessage = error.response.statusText;
 
   switch (errorMessage) {
     case NOT_FOUND:
       return ERROR_NOT_FOUND;
     case BAD_REQUEST:
       return ERROR_INVALID_TRACK;
+    case FORBIDDEN:
+      return ERROR_FORBIDDEN;
     case UNAUTHORIZED:
       return ERROR_SPOTIFY_CONNECT;
     default:
