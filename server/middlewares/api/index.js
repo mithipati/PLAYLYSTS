@@ -3,12 +3,15 @@ const express = require('express');
 const axios = require('axios');
 const queryString = require('query-string');
 
+const firebaseHandle = require('./firebaseHandle');
 const logger = require('../../logger');
 
-const SOUNDCLOUD_CLIENT_ID = require('../../../internals/secret').SOUNDCLOUD_CLIENT_ID;
 const SOUNDCLOUD_TRACK_ENDPOINT = require('./constants').SOUNDCLOUD_TRACK_ENDPOINT;
-const YOUTUBE_API_KEY = require('../../../internals/secret').YOUTUBE_API_KEY;
 const YOUTUBE_TRACK_ENDPOINT = require('./constants').YOUTUBE_TRACK_ENDPOINT;
+const SPOTIFY_TRACK_ENDPOINT = require('./constants').SPOTIFY_TRACK_ENDPOINT;
+
+const SOUNDCLOUD_CLIENT_ID = require('../../../internals/secret').SOUNDCLOUD_CLIENT_ID;
+const YOUTUBE_API_KEY = require('../../../internals/secret').YOUTUBE_API_KEY;
 const SPOTIFY_OAUTH_CODE_ENDPOINT = require('./constants').SPOTIFY_OAUTH_CODE_ENDPOINT;
 const SPOTIFY_OAUTH_TOKEN_ENDPOINT = require('./constants').SPOTIFY_OAUTH_TOKEN_ENDPOINT;
 const SPOTIFY_OAUTH_REDIRECT_URI = require('./constants').SPOTIFY_OAUTH_REDIRECT_URI;
@@ -56,6 +59,47 @@ router.get('/parse/youtube', (req, res) => {
     .catch(error => {
       logger.error(error);
       res.status(400).end();
+    });
+});
+
+router.get('/parse/spotify', (req, res) => {
+  const accessToken = req.get('X-Spotify-Access-Token');
+
+  // validate access token
+  if (!accessToken) {
+    logger.error('Spotify Parse Error: No Access Token');
+    res.status(400).end();
+  }
+
+  // get Spotify track ID
+  let trackID;
+  const trackURL = req.query.trackURL;
+  const subTrackURL = trackURL.slice(trackURL.indexOf('track'));
+
+  if (trackURL.match(/spotify:track/i)) {
+    trackID = subTrackURL.split(':')[1];
+  } else if (trackURL.match(/(spotify)(.*?)(\/)(track)/i)) {
+    trackID = subTrackURL.split('/')[1];
+  }
+
+  // validate Spotify track ID
+  if (!trackID) {
+    logger.error('Spotify Parse Error: No Track ID');
+    res.status(400).end();
+  }
+
+  // get spotify track
+  axios.get(`${SPOTIFY_TRACK_ENDPOINT}/${trackID}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
+  })
+    .then(track => {
+      res.json({ data: track.data });
+    })
+    .catch(error => {
+      logger.error(error.response.statusText);
+      res.status(error.response.status).end();
     });
 });
 
