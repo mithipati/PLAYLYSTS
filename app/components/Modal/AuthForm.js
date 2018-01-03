@@ -2,8 +2,8 @@
 import React from 'react';
 import { compose } from 'redux';
 import { firebaseConnect } from 'react-redux-firebase'
-import { SubmissionError } from 'redux-form/immutable';
 import { Field, reduxForm } from 'redux-form/immutable';
+import { SubmissionError } from 'redux-form/immutable';
 import { TextField } from 'redux-form-material-ui';
 import { FormGroup } from 'material-ui/Form';
 import { CircularProgress } from 'material-ui/Progress';
@@ -15,28 +15,22 @@ import classNames from 'classnames';
 
 class AuthForm extends React.Component {
   state = {
-    isSubmitting: false,
     isFacebookSubmitting: false,
   };
 
   handleSubmit = values => {
-    this.setState({ isSubmitting: true });
 
     const { isNewUser, isResetPassword, handleClose, firebase } = this.props;
     const email = values.get('email');
 
     // validate required email
     if (!email){
-      this.setState({ isSubmitting: false });
-
       throw new SubmissionError({
         email: 'Required'
       });
     }
 
     if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email)) {
-      this.setState({ isSubmitting: false });
-
       throw new SubmissionError({
         email: 'Invalid email'
       });
@@ -45,8 +39,6 @@ class AuthForm extends React.Component {
     // validate required password if not resetting it
     if (!isResetPassword) {
       if (!values.get('password')){
-        this.setState({ isSubmitting: false });
-
         throw new SubmissionError({
           password: 'Required'
         });
@@ -58,15 +50,11 @@ class AuthForm extends React.Component {
 
       const password = values.get('password');
       if (password && password.length < 6) {
-        this.setState({ isSubmitting: false });
-
         throw new SubmissionError({
           password: 'Password should be at least 6 characters'
         });
       }
       if (password !== values.get('password_confirmation')) {
-        this.setState({ isSubmitting: false });
-
         throw new SubmissionError({
           password_confirmation: 'Passwords must match'
         });
@@ -77,8 +65,6 @@ class AuthForm extends React.Component {
         password: values.get('password')
       }).then(() => handleClose())
         .catch(error => {
-          this.setState({ isSubmitting: false });
-
           throw new SubmissionError({
             email: error.message
           });
@@ -89,8 +75,6 @@ class AuthForm extends React.Component {
       return firebase.resetPassword(email)
         .then(() => handleClose())
         .catch(error => {
-          this.setState({ isSubmitting: false });
-
           throw new SubmissionError({
             email: error.message
           });
@@ -103,8 +87,6 @@ class AuthForm extends React.Component {
         password: values.get('password')
       }).then(() => handleClose())
         .catch(error => {
-          this.setState({ isSubmitting: false });
-
           throw new SubmissionError({
             email: error.message
           });
@@ -183,14 +165,14 @@ class AuthForm extends React.Component {
         {
           isResetPassword
           ? <button type='submit' disabled={submitting} className='action-button'>
-              { !this.state.isSubmitting
+              { !submitting
                 ? <span>RESET</span>
                 : <CircularProgress size={25} thickness={3.0} color='accent'/>
               }
             </button>
           : <div>
               <button type='submit' disabled={submitting} className='action-button'>
-                { !this.state.isSubmitting
+                { !submitting
                   ? <span>SUBMIT</span>
                   : <CircularProgress size={25} thickness={3.0} color='accent'/>
                 }
@@ -218,7 +200,7 @@ class AuthForm extends React.Component {
 export default compose(
   withStyles(styles),
   reduxForm({
-    form: 'auth',
+    form: 'auth'
   }),
   firebaseConnect(),
 )(AuthForm);

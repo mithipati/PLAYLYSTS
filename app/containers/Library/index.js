@@ -1,71 +1,87 @@
 
 import React from 'react';
-import { connect } from 'react-redux';
 import { compose } from 'redux';
+import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
+import { reduxForm, Field, SubmissionError } from 'redux-form/immutable';
 
-import injectReducer from "../../utils/injectReducer";
+import injectReducer from '../../utils/injectReducer';
 import reducer from './reducer';
 import injectSaga from '../../utils/injectSaga';
-import saga from '../../services/urlService';
+import parser from '../../services/parser';
 
-import { addSong, removeSong, changeSongLink } from './actions';
-import { makeSelectSongs, makeSelectSongLink, makeSelectIsSongLinkError } from './selectors';
+import { addTrack, removeTrack } from './actions';
+import { makeSelectTracks } from './selectors';
+import Redirect from './Redirect';
 
 import Grid from 'material-ui/Grid';
-import { FormControl, FormHelperText } from 'material-ui/Form';
+import { FormHelperText } from 'material-ui/Form';
 import Typography from 'material-ui/Typography';
-import Input from 'material-ui/Input';
+import { CircularProgress } from 'material-ui/Progress';
+import { TextField } from 'redux-form-material-ui';
 
 import Table from '../../components/Table';
 
-import classNames from 'classnames';
 import { withStyles } from 'material-ui/styles';
 import styles from './style';
 
 class Library extends React.Component {
 
+  handleSubmit = values => {
+    const track = values.get('track');
+
+    if (!track){
+      throw new SubmissionError({
+        track: 'Required'
+      });
+    }
+
+    this.props.addTrack(track);
+  };
+
   render() {
-    const { classes } = this.props;
+    const { handleSubmit, submitting, classes } = this.props;
 
     return (
       <div className={classes.root}>
+        <Redirect/>
         <Grid container item={true}>
-          <Grid className={classes.addSongContainer} item xs={12} sm={12}>
-            <Typography type='display2' className={classes.heading}>
-              Add Song
-            </Typography>
-            <FormControl className={classes.formControl}>
-              <Input
-                placeholder='Enter a valid YouTube, SoundCloud, or Spotify song link'
+          <Grid item xs={12} sm={12}>
+            <form onSubmit={handleSubmit(this.handleSubmit)}>
+              <Field
+                name='track'
+                label='Add Track'
+                component={TextField}
+                InputProps={{
+                  className: classes.input,
+                  autoComplete: false,
+                  autoCorrect: false,
+                  autoCapitalize: false,
+                  spellCheck: false,
+                }}
+                InputLabelProps={{
+                  className: classes.label,
+                }}
+                FormHelperTextProps={{
+                  className: classes.helperTextError,
+                }}
                 fullWidth
-                className={classNames(classes.input, { [classes.error]: this.props.isSongLinkError })}
-                autoComplete={false}
-                autoCorrect={false}
-                autoCapitalize={false}
-                spellCheck={false}
-                error
-                value={this.props.songLink}
-                onChange={(event) => this.props.onChangeSongLink(event.target.value)}
-                onKeyPress={(event) => { if (event.key === 'Enter') this.props.onAddSong(event.target.value) }}
               />
-              <FormHelperText
-                className={classNames(classes.errorMessage, { [classes.error]: this.props.isSongLinkError })}
-              >
-                Invalid link. Please enter a new link and try again.
-              </FormHelperText>
+              {
+                submitting && <CircularProgress size={25} thickness={3.0} color='accent' className={classes.loader} />
+              }
               <FormHelperText className={classes.helperText}>
                 Need help?
               </FormHelperText>
-            </FormControl>
+            </form>
           </Grid>
           <Grid item xs={12} sm={12}>
             <Typography type='display2' className={classes.heading}>
-              My Songs
+              Library
             </Typography>
           </Grid>
           <Grid item xs={12} sm={12}>
-            <Table songs={this.props.songs} onRemoveSong={this.props.onRemoveSong} />
+            <Table tracks={this.props.tracks} onRemoveTrack={this.props.removeTrack} />
           </Grid>
         </Grid>
       </div>
@@ -75,25 +91,25 @@ class Library extends React.Component {
 
 export function mapDispatchToProps(dispatch) {
   return {
-    onAddSong: (url) => dispatch(addSong(url)),
-    onChangeSongLink: (url) => dispatch(changeSongLink(url)),
-    onRemoveSong: (song) => dispatch(removeSong(song)),
+    addTrack: trackURL => dispatch(addTrack(trackURL)),
+    removeTrack: track => dispatch(removeTrack(track)),
   };
 }
 
 const mapStateToProps = createStructuredSelector({
-  songs: makeSelectSongs(),
-  songLink: makeSelectSongLink(),
-  isSongLinkError: makeSelectIsSongLinkError(),
+  tracks: makeSelectTracks(),
 });
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);
 const withReducer = injectReducer({ key: 'library', reducer });
-const withSaga = injectSaga({ key: 'library', saga });
+const withParserSaga = injectSaga({ key: 'parser', saga: parser });
 
 export default compose(
   withStyles(styles),
+  reduxForm({
+    form: 'track'
+  }),
   withReducer,
-  withSaga,
+  withParserSaga,
   withConnect,
 )(Library);

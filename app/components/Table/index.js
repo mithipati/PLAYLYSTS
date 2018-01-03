@@ -14,25 +14,25 @@ import Ionicon from 'react-ionicons'
 
 class TableUI extends React.Component {
   renderTableRows() {
-    const { songs, classes } = this.props;
+    const { tracks, classes } = this.props;
 
-    return songs.map(song => {
+    return tracks.map(track => {
       return (
-        <TableRow hover key={song.get('id')} className={classNames(classes.tableRow, 'tableRow')}>
+        <TableRow hover key={track.get('id')} className={classNames(classes.tableRow, 'tableRow')}>
           <TableCell padding='checkbox' className={classNames(classes.tableCell, classes.button)}>
             <Ionicon className='button iconButton' icon='ios-play-outline' fontSize='30px' color='#40C4FF'/>
           </TableCell>
-          <TableCell padding='default' className={classes.tableCell}>{song.get('title')}</TableCell>
-          <TableCell padding='checkbox' className={classes.tableCell}>{song.get('artist')}</TableCell>
-          <TableCell padding='checkbox' className={classes.tableCell}>{song.get('source')}</TableCell>
-          <TableCell padding='checkbox' className={classes.tableCell}>{song.get('created_at')}</TableCell>
+          <TableCell padding='default' className={classes.tableCell}>{track.get('title')}</TableCell>
+          <TableCell padding='checkbox' className={classes.tableCell}>{track.get('artist')}</TableCell>
+          <TableCell padding='checkbox' className={classes.tableCell}>{track.get('source')}</TableCell>
+          <TableCell padding='checkbox' className={classes.tableCell}>{track.get('created_at')}</TableCell>
           <TableCell padding='checkbox' className={classNames(classes.tableCell, classes.button)}>
             <Ionicon
               className='button iconButton'
               icon='ios-more'
               fontSize='30px'
               color='#40C4FF'
-              onClick={this.props.onRemoveSong.bind(this, song)}
+              onClick={this.props.onRemoveTrack.bind(this, track)}
             />
           </TableCell>
         </TableRow>
@@ -41,13 +41,13 @@ class TableUI extends React.Component {
   }
 
   render() {
-    const { songs, classes } = this.props;
+    const { tracks, classes } = this.props;
 
-    if (!songs.size) {
+    if (!tracks.size) {
       return (
         <Paper className={classes.root}>
           <Typography type='headline' className={classes.placeholder}>
-            No songs added yet
+            No tracks added yet
           </Typography>
         </Paper>
       );
@@ -76,7 +76,7 @@ class TableUI extends React.Component {
 }
 
 TableUI.propTypes = {
-  // songs: PropTypes.object.isRequired,
+  // tracks: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(TableUI);

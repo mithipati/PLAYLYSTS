@@ -3,24 +3,12 @@ import { createSelector } from 'reselect';
 
 const selectLibrary = (state) => state.get('library');
 
-const makeSelectSongs = () => createSelector(
+const makeSelectTracks = () => createSelector(
   selectLibrary,
-  (libraryState) => libraryState.get('songs')
-);
-
-const makeSelectSongLink = () => createSelector(
-  selectLibrary,
-  (libraryState) => libraryState.get('songLink')
-);
-
-const makeSelectIsSongLinkError = () =>  createSelector(
-  selectLibrary,
-  (libraryState) => libraryState.get('isSongLinkError')
+  (libraryState) => libraryState.get('tracks')
 );
 
 export {
   selectLibrary,
-  makeSelectSongs,
-  makeSelectSongLink,
-  makeSelectIsSongLinkError,
+  makeSelectTracks,
 };
