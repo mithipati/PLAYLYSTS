@@ -10,6 +10,7 @@ import 'sanitize.css/sanitize.css';
 
 // load assets and .htaccess file
 import '!file-loader?name=[name].[ext]!./images/facebook-icon.png';
+import '!file-loader?name=[name].[ext]!./images/spotify-icon.png';
 import '!file-loader?name=[name].[ext]!./images/favicon.ico';
 import '!file-loader?name=[name].[ext]!./images/icon-72x72.png';
 import '!file-loader?name=[name].[ext]!./images/icon-96x96.png';

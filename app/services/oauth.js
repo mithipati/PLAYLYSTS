@@ -6,7 +6,7 @@ import { getFirebase } from 'react-redux-firebase';
 import axios from 'axios';
 
 import { _getErrorMessage } from './helpers';
-import { INIT_OAUTH, COMPLETE_OAUTH } from '../containers/App/constants';
+import { INIT_OAUTH, COMPLETE_OAUTH, REMOVE_OAUTH } from '../containers/App/constants';
 
 function* initOAuth({ source }) {
   try {
@@ -46,9 +46,27 @@ function* completeOAuth({ data: { source, code } }) {
   }
 }
 
+function* removeOAuth({ source }) {
+  try {
+
+    yield getFirebase().updateProfile({
+      [`oauth/${source}/accessToken`]: '',
+      [`oauth/${source}/refreshToken`]: '',
+    });
+
+    // dispatch success noty
+
+  } catch (error) {
+
+    yield put(stopSubmit('settings', { spotify_oauth: _getErrorMessage(error) }));
+
+  }
+}
+
 export default function* oauth() {
   yield [
     takeLatest(INIT_OAUTH, initOAuth),
-    takeLatest(COMPLETE_OAUTH, completeOAuth)
+    takeLatest(COMPLETE_OAUTH, completeOAuth),
+    takeLatest(REMOVE_OAUTH, removeOAuth),
   ];
 }

@@ -1,5 +1,5 @@
 
-import { INIT_OAUTH, COMPLETE_OAUTH } from './constants';
+import { INIT_OAUTH, COMPLETE_OAUTH, REMOVE_OAUTH } from './constants';
 
 export function initOAuth(source) {
   return {
@@ -15,5 +15,12 @@ export function completeOAuth(source, code) {
       source,
       code
     }
+  }
+}
+
+export function removeOAuth(source) {
+  return {
+    type: REMOVE_OAUTH,
+    source
   }
 }

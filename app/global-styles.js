@@ -104,7 +104,12 @@ injectGlobal`
   }
   
   .social-icon {
-    width: 25px;
+    width: 32px;
     margin-right: 15px;
+  }
+  
+  .divider {
+    border-top: 1px solid black;
+    margin: 20px 0;
   }
 `;
