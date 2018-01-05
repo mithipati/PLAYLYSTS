@@ -2,6 +2,7 @@
 import { put, call, takeLatest } from 'redux-saga/effects';
 import { fromJS } from 'immutable';
 import { startSubmit, stopSubmit, reset } from 'redux-form/immutable';
+import { getFirebase } from 'react-redux-firebase';
 import axios from 'axios';
 
 import {
@@ -13,17 +14,16 @@ import {
 } from './helpers';
 import { SOUNDCLOUD, YOUTUBE, SPOTIFY, ERROR_INVALID_TRACK, ERROR_NOT_FOUND, ERROR_SPOTIFY_CONNECT } from './constants';
 import { ADD_TRACK } from '../containers/Library/constants';
-import { addTrackSuccess } from '../containers/Library/actions';
+import { addTrack, addTrackSuccess } from '../containers/Library/actions';
 
 function* getSoundCloudTrack(trackURL) {
   try {
 
     const response = yield call(axios, `/api/parse/soundcloud?trackURL=${trackURL}`);
-    const trackData = response.data.track;
+    const { trackData } = response.data;
 
     if (trackData.kind !== 'track') {
-      yield put(stopSubmit('track', { track: ERROR_INVALID_TRACK }));
-      return false;
+      return yield put(stopSubmit('track', { track: ERROR_INVALID_TRACK }));
     }
 
     const track = fromJS({
@@ -48,11 +48,10 @@ function* getYouTubeTrack(trackURL) {
   try {
 
     const response = yield call(axios, `/api/parse/youtube?trackURL=${trackURL}`);
-    const trackData = response.data.track;
+    const { trackData } = response.data;
 
     if (trackData.kind !== 'youtube#video') {
-      yield put(stopSubmit('track', { track: ERROR_INVALID_TRACK }));
-      return false;
+      return yield put(stopSubmit('track', { track: ERROR_INVALID_TRACK }));
     }
 
     const track = fromJS({
@@ -74,11 +73,9 @@ function* getYouTubeTrack(trackURL) {
 }
 
 function* getSpotifyTrack(trackURL) {
-
     const user = yield _getCurrentUser();
     if (!_isUserAuthorizedWithSpotify(user)) {
-      yield put(stopSubmit('track', { track: ERROR_SPOTIFY_CONNECT }));
-      return false;
+      return yield put(stopSubmit('track', { track: ERROR_SPOTIFY_CONNECT }));
     }
     const accessToken = user.oauth.spotify.accessToken;
     const refreshToken = user.oauth.spotify.refreshToken;
@@ -98,11 +95,22 @@ function* getSpotifyTrack(trackURL) {
           }
         }
       );
-      const trackData = response.data.track;
 
+      // handle stale Spotify access tokens
+      const { isTokenStale } = response.data;
+      if (isTokenStale) {
+        // save new access token
+        yield getFirebase().updateProfile({
+          ['oauth/spotify/accessToken']: response.data.accessToken
+        });
+        // restart add track process
+        return yield put(addTrack(trackURL));
+      }
+
+      // add track
+      const { trackData } = response.data;
       if (trackData.type !== 'track') {
-        yield put(stopSubmit('track', { track: ERROR_INVALID_TRACK }));
-        return false;
+        return yield put(stopSubmit('track', { track: ERROR_INVALID_TRACK }));
       }
 
       const track = fromJS({

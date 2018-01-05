@@ -1,8 +1,8 @@
 
 import { put, call, takeLatest } from 'redux-saga/effects';
 import { replace } from 'react-router-redux';
-import { getFirebase } from 'react-redux-firebase';
 import { stopSubmit } from 'redux-form/immutable';
+import { getFirebase } from 'react-redux-firebase';
 import axios from 'axios';
 
 import { _getErrorMessage } from './helpers';
@@ -11,7 +11,9 @@ import { INIT_OAUTH, COMPLETE_OAUTH } from '../containers/App/constants';
 function* initOAuth({ source }) {
   try {
 
-    const { data: { redirectURL } } = yield call(axios, `/api/oauth/${source}`);
+    const response = yield call(axios, `/api/oauth/${source}`);
+    const { redirectURL } = response.data;
+
     window.location = redirectURL;
 
   } catch (error) {
@@ -26,7 +28,9 @@ function* completeOAuth({ data: { source, code } }) {
 
     yield put(replace('/'));
 
-    const { data: { accessToken, refreshToken } } = yield call(axios, `/api/oauth/${source}/redirect?code=${code}`);
+    const response = yield call(axios, `/api/oauth/${source}/redirect?code=${code}`);
+    const { accessToken } = response.data;
+    const { refreshToken } = response.data;
 
     yield getFirebase().updateProfile({
       [`oauth/${source}/accessToken`]: accessToken,

@@ -12,11 +12,11 @@ const logger = {
 
   // Called whenever there's an error on the server we want to print
   error: (err) => {
-    console.error(`${chalk.bold.red(err)} ${divider}`);
+    console.error(`${chalk.bold.red(JSON.stringify(err))} ${divider}`);
   },
 
   print: (title, message = '') => {
-    console.log(`${chalk.bold.blue('INFO: ')} ${title} ${message} ${divider}`);
+    console.log(`${chalk.bold.blue('INFO: ')} ${title} ${message ? JSON.stringify(message) : ''} ${divider}`);
   },
 
   // Called when express.js app starts on given port w/o errors
