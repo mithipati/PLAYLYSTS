@@ -2,6 +2,7 @@
 const express = require('express');
 const axios = require('axios');
 const queryString = require('query-string');
+const base64 = require('base-64');
 
 const firebaseHandle = require('./firebaseHandle');
 const logger = require('../../logger');
@@ -29,17 +30,18 @@ router.get('/parse/soundcloud', (req, res) => {
       client_id: SOUNDCLOUD_CLIENT_ID
     }
   })
-    .then(track => {
-      res.json({ data: track.data });
+    .then(({ data }) => {
+      res.json({ trackData: data });
     })
     .catch(error => {
-      logger.error(error);
-      res.status(400).end();
+      logger.error(error.response.statusText);
+      res.status(error.response.status).end();
     });
 });
 
 router.get('/parse/youtube', (req, res) => {
   const params = queryString.parse(queryString.extract(req.query.trackURL));
+  console.log(params);
 
   if (!params.v) {
     res.status(400).end();
@@ -48,17 +50,17 @@ router.get('/parse/youtube', (req, res) => {
 
   axios.get(YOUTUBE_TRACK_ENDPOINT, {
     params: {
-      part: 'snippet%2CcontentDetails',
+      part: 'snippet,contentDetails',
       id: videoID,
       key: YOUTUBE_API_KEY
     }
   })
-    .then(track => {
-      res.json({ data: track.data.items[0] });
+    .then(({ data }) => {
+      res.json({ trackData: data.items[0] });
     })
     .catch(error => {
-      logger.error(error);
-      res.status(400).end();
+      logger.error(error.response.statusText);
+      res.status(error.response.status).end();
     });
 });
 
@@ -94,12 +96,42 @@ router.get('/parse/spotify', (req, res) => {
       Authorization: `Bearer ${accessToken}`
     }
   })
-    .then(track => {
-      res.json({ data: track.data });
+    .then(({ data }) => {
+      res.json({ trackData: data });
     })
     .catch(error => {
-      logger.error(error.response.statusText);
-      res.status(error.response.status).end();
+      // handle expired access token (request new access token and try again)
+      if (error.response.status === 401) {
+
+        axios.post(
+          SPOTIFY_OAUTH_TOKEN_ENDPOINT,
+          queryString.stringify({
+            grant_type: 'refresh_token',
+            refresh_token: req.get('X-Spotify-Refresh-Token')
+          }),
+          {
+            headers: {
+              Authorization: `Basic ${base64.encode(SPOTIFY_CLIENT_ID + ':' + SPOTIFY_CLIENT_SECRET)}`
+            }
+          }
+        )
+          .then(({ data }) => {
+            res.json({
+              isTokenStale: true,
+              accessToken: data.access_token
+            })
+          })
+          .catch(error => {
+            console.log(error.response);
+            res.status(error.response.status).end();
+          });
+
+      } else {
+
+        logger.error(error.response.statusText);
+        res.status(error.response.status).end();
+
+      }
     });
 });
 

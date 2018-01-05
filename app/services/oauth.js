@@ -1,21 +1,24 @@
 
 import { put, call, takeLatest } from 'redux-saga/effects';
 import { replace } from 'react-router-redux';
+import { stopSubmit } from 'redux-form/immutable';
 import { getFirebase } from 'react-redux-firebase';
+import axios from 'axios';
 
-import request from '../utils/request';
-
-import { INIT_OAUTH, COMPLETE_OAUTH } from '../containers/App/constants';
+import { _getErrorMessage } from './helpers';
+import { INIT_OAUTH, COMPLETE_OAUTH, REMOVE_OAUTH } from '../containers/App/constants';
 
 function* initOAuth({ source }) {
   try {
 
-    const { redirectURL } = yield call(request, `/api/oauth/${source}`);
+    const response = yield call(axios, `/api/oauth/${source}`);
+    const { redirectURL } = response.data;
+
     window.location = redirectURL;
 
   } catch (error) {
 
-    console.log(error)
+    yield put(stopSubmit('settings', { spotify_oauth: _getErrorMessage(error) }));
 
   }
 }
@@ -25,7 +28,9 @@ function* completeOAuth({ data: { source, code } }) {
 
     yield put(replace('/'));
 
-    const { accessToken, refreshToken } = yield call(request, `/api/oauth/${source}/redirect?code=${code}`);
+    const response = yield call(axios, `/api/oauth/${source}/redirect?code=${code}`);
+    const { accessToken } = response.data;
+    const { refreshToken } = response.data;
 
     yield getFirebase().updateProfile({
       [`oauth/${source}/accessToken`]: accessToken,
@@ -36,7 +41,24 @@ function* completeOAuth({ data: { source, code } }) {
 
   } catch (error) {
 
-    console.log(error);
+    yield put(stopSubmit('settings', { spotify_oauth: _getErrorMessage(error) }));
+
+  }
+}
+
+function* removeOAuth({ source }) {
+  try {
+
+    yield getFirebase().updateProfile({
+      [`oauth/${source}/accessToken`]: '',
+      [`oauth/${source}/refreshToken`]: '',
+    });
+
+    // dispatch success noty
+
+  } catch (error) {
+
+    yield put(stopSubmit('settings', { spotify_oauth: _getErrorMessage(error) }));
 
   }
 }
@@ -44,6 +66,7 @@ function* completeOAuth({ data: { source, code } }) {
 export default function* oauth() {
   yield [
     takeLatest(INIT_OAUTH, initOAuth),
-    takeLatest(COMPLETE_OAUTH, completeOAuth)
+    takeLatest(COMPLETE_OAUTH, completeOAuth),
+    takeLatest(REMOVE_OAUTH, removeOAuth),
   ];
 }

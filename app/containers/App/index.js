@@ -3,6 +3,7 @@ import React from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux'
 import { Switch, Route } from 'react-router-dom';
+import { createStructuredSelector } from 'reselect';
 import { firebaseConnect, getVal } from 'react-redux-firebase';
 
 import AppWrapper from './style';
@@ -15,6 +16,7 @@ import Landing from '../../components/Landing';
 import Playlist from '../Playlist';
 import NotFoundPage from '../NotFoundPage';
 
+import { makeSelectAuth } from './selectors';
 import { withLoader } from './withLoader';
 
 const App = (props) => {
@@ -43,7 +45,13 @@ const App = (props) => {
   );
 };
 
+const mapStateToProps = createStructuredSelector({
+  auth: makeSelectAuth(),
+});
+
+const withConnect = connect(mapStateToProps, null);
+
 export default compose(
   firebaseConnect(),
-  connect((state) => ({ auth: getVal(state.get('firebase'), 'auth') }))
+  withConnect,
 )(App);

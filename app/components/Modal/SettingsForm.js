@@ -10,7 +10,8 @@ import { TextField } from 'redux-form-material-ui';
 import { FormGroup } from 'material-ui/Form';
 import { CircularProgress } from 'material-ui/Progress';
 
-import { initOAuth } from '../../containers/App/actions';
+import { makeSelectIsSpotifyConnected } from '../../containers/App/selectors';
+import { initOAuth, removeOAuth } from '../../containers/App/actions';
 import injectSaga from '../../utils/injectSaga';
 import oauth from '../../services/oauth';
 
@@ -27,7 +28,10 @@ class SettingsForm extends React.Component {
 
   handleSpotifySubmit = () => {
     this.setState({ isSpotifySubmitting: true });
-    this.props.initOAuth('spotify');
+
+    const { isSpotifyConnected, initOAuth, removeOAuth } = this.props;
+
+    isSpotifyConnected ? removeOAuth('spotify') : initOAuth('spotify');
   };
 
   handleLogout = event => {
@@ -39,7 +43,7 @@ class SettingsForm extends React.Component {
   };
 
   render() {
-    const { handleSubmit, submitting, classes } = this.props;
+    const { handleSubmit, submitting, isSpotifyConnected, classes } = this.props;
 
     return (
       <form onSubmit={handleSubmit(this.handleSubmit)} className={classes.form}>
@@ -65,8 +69,11 @@ class SettingsForm extends React.Component {
         </FormGroup>
         <button onClick={handleSubmit(this.handleSpotifySubmit)} disabled={submitting} className='action-button'>
           { !this.state.isSpotifySubmitting
-            ? <span><img src='facebook-icon.png' className='social-icon' />Connect with Spotify</span>
-            : <CircularProgress size={25} thickness={3.0} color='accent' />
+            ? <span>
+                <img src='spotify-icon.png' className='social-icon'/>
+                { isSpotifyConnected ? 'DISCONNECT' : 'CONNECT' }
+              </span>
+            : <CircularProgress size={25} thickness={3.0} color='accent'/>
           }
         </button>
         <Field
@@ -82,6 +89,7 @@ class SettingsForm extends React.Component {
             : <CircularProgress size={25} thickness={3.0} color='accent'/>
           }
         </button>
+        <div className='divider'/>
         <button onClick={this.handleLogout} disabled={submitting} className='action-button error'>
           LOG OUT
         </button>
@@ -93,10 +101,15 @@ class SettingsForm extends React.Component {
 export function mapDispatchToProps(dispatch) {
   return {
     initOAuth: code => dispatch(initOAuth(code)),
+    removeOAuth: source => dispatch(removeOAuth(source)),
   };
 }
 
-const withConnect = connect(null, mapDispatchToProps);
+const mapStateToProps = createStructuredSelector({
+  isSpotifyConnected: makeSelectIsSpotifyConnected(),
+});
+
+const withConnect = connect(mapStateToProps, mapDispatchToProps);
 const withOAuthSaga = injectSaga({ key: 'oauth', saga: oauth });
 
 export default compose(

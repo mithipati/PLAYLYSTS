@@ -2,13 +2,16 @@
 import React from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { firebaseConnect, isLoaded, isEmpty, getVal } from 'react-redux-firebase';
+import { createStructuredSelector } from 'reselect';
+import { firebaseConnect, isLoaded, isEmpty } from 'react-redux-firebase';
 import { Link } from 'react-router-dom';
 
 import AppBar from 'material-ui/AppBar';
 import Typography from 'material-ui/Typography';
 
 import Modal from '../../components/Modal';
+
+import { makeSelectAuth, makeSelectProfile } from '../App/selectors';
 
 import { withStyles } from 'material-ui/styles';
 import styles from './style';
@@ -77,8 +80,14 @@ class TopNav extends React.Component {
   }
 }
 
+const mapStateToProps = createStructuredSelector({
+  auth: makeSelectAuth(),
+});
+
+const withConnect = connect(mapStateToProps, null);
+
 export default compose(
   withStyles(styles),
   firebaseConnect(),
-  connect((state) => ({ auth: getVal(state.get('firebase'), 'auth') })),
+  withConnect,
 )(TopNav);
