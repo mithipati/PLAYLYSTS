@@ -21,6 +21,10 @@
 
   .playback-buttons {
     margin-bottom: 5px;
+
+    .play-pause-button {
+      margin: 0 20px;
+    }
   }
 
   .playback-progress {
@@ -30,6 +34,6 @@
   }
 }
 
-.play {
-  margin: 0 20px;
+#yt-player {
+  display: none;
 }
