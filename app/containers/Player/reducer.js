@@ -1,26 +1,29 @@
 
 import { fromJS } from 'immutable';
-import { PLAY_TRACK_SUCCESS, PAUSE_TRACK_SUCCESS } from './constants';
+import { PLAY_TRACK, PAUSE_TRACK } from './constants';
 
 // TODO: remove placeholder
 const initialState = fromJS({
-  isPlaying: false,
-  track: {
+  isCurrentlyPlaying: false,
+  currentTrack: {
     title: 'Too Good At Goodbyes',
     artist: 'Sam Smith',
-    duration: 1000,
+    duration: 150000, // 2m 30s
+    source: {
+      name: 'soundcloud',
+      url: 'https://api.soundcloud.com/tracks/251321849/stream',
+    }
   }
 });
 
 function playerReducer(state = initialState, action) {
   switch (action.type) {
-    case PLAY_TRACK_SUCCESS:
+    case PLAY_TRACK:
       return state
-        .set('isPlaying', true)
-        .setIn(['track', 'title'], action.data.title)
-        .setIn(['track', 'artist'], action.data.artist);
-    case PAUSE_TRACK_SUCCESS:
-      return state.set('isPlaying', false);
+        .set('isCurrentlyPlaying', true)
+        .set('currentTrack', fromJS(action.track));
+    case PAUSE_TRACK:
+      return state.set('isCurrentlyPlaying', false);
     default:
       return state;
   }

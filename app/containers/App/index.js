@@ -40,7 +40,7 @@ const App = (props) => {
         />
         <Route component={NotFoundPage} />
       </Switch>
-      { withLoader(<Player title='Too Good at Goodbyes' artist='Sam Smith' />, null, null, auth) }
+      { withLoader(<Player/>, null, null, auth) }
     </AppWrapper>
   );
 };

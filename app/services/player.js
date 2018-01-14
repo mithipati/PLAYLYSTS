@@ -1,12 +1,13 @@
 
-import { put, call, takeLatest } from 'redux-saga/effects';
-import axios from 'axios';
+import { put, takeLatest } from 'redux-saga/effects';
 
-import { PLAY_TRACK, PLAY_TRACK_SUCCESS, PAUSE_TRACK, PAUSE_TRACK_SUCCESS } from '../containers/Player/constants';
+import { playTrackSuccess, pauseTrackSuccess } from '../containers/Player/actions';
+import { PLAY_TRACK, PAUSE_TRACK } from '../containers/Player/constants';
 
 function* playTrack({ track }) {
   try {
 
+    yield put(playTrackSuccess(track));
 
   } catch (error) {
 
@@ -19,6 +20,7 @@ function* playTrack({ track }) {
 function* pauseTrack() {
   try {
 
+    yield put(pauseTrackSuccess());
 
   } catch (error) {
 

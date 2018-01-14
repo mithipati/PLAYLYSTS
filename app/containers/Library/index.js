@@ -6,8 +6,8 @@ import { createStructuredSelector } from 'reselect';
 import { reduxForm, Field, SubmissionError } from 'redux-form/immutable';
 
 import injectReducer from '../../utils/injectReducer';
-import reducer from './reducer';
 import injectSaga from '../../utils/injectSaga';
+import reducer from './reducer';
 import parser from '../../services/parser';
 
 import { addTrack, removeTrack } from './actions';

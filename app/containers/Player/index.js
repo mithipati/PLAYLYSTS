@@ -1,11 +1,20 @@
 
 import React from 'react';
-import SoundCloudPlayer from 'soundcloud-audio';
-import YouTubePlayer from 'youtube-player';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+
+import SoundCloud from './sources/SoundCloud';
+import YouTube from './sources/YouTube';
+
+import injectReducer from '../../utils/injectReducer';
+import injectSaga from '../../utils/injectSaga';
+import reducer from './reducer';
+import player from '../../services/player';
+import { playTrack, pauseTrack } from './actions';
+import { makeSelectIsCurrentlyPlaying, makeSelectCurrentTrack, makeSelectCurrentSource } from './selectors';
+
 import classNames from 'classnames';
-
-import { SOUNDCLOUD_CLIENT_ID } from '../../../internals/secret';
-
 import Typography from 'material-ui/Typography';
 import { LinearProgress } from 'material-ui/Progress';
 import { withStyles } from 'material-ui/styles';
@@ -15,46 +24,36 @@ import Ionicon from 'react-ionicons'
 
 class Player extends React.Component {
 
-  state = {
-    isPlaying: false,
-  };
+  handlePlayPause = () => {
+    const { isCurrentlyPlaying, currentTrack, playTrack, pauseTrack } = this.props;
+    const track = {
+      title: 'Thinking Out Loud',
+      artist: 'Ed Sheeran',
+      duration: 150000,
+      source: {
+        name: 'soundcloud',
+        url: 'https://api.soundcloud.com/tracks/251321849/stream'
+        // name: 'youtube',
+        // url: 'f6Cswdm601A'
+      }
+    };
 
-  scPlayer = new SoundCloudPlayer(SOUNDCLOUD_CLIENT_ID);
-  ytPlayer;
-
-  componentDidMount() {
-    // this.ytPlayer = YouTubePlayer('yt-player');
-    // this.ytPlayer.loadVideoById('Oapebl0bADA');
-    // this.ytPlayer.playVideo();
-    this.scPlayer.preload('https://api.soundcloud.com/tracks/251321849/stream');
-    // this.scPlayer.play({ streamUrl: 'https://api.soundcloud.com/tracks/251062262/stream' });
-    // this.scPlayer.resolve('https://soundcloud.com/wearegraves/see-the-whole-world-featuring-tsrk-jsun', (track) => {
-    //   console.log(track);
-    // });
-  }
-
-  componentDidUpdate() {
-    this.state.isPlaying ? this.scPlayer.play() : this.scPlayer.pause();
-  }
-
-  togglePlayer = () => {
-    this.setState({ isPlaying: !this.state.isPlaying });
-    // this.setState({ isPlaying: !this.state.isPlaying }, () => {
-    //   this.state.isPlaying ? this.ytPlayer.pauseVideo() : this.ytPlayer.playVideo();
-    // });
+    if (currentTrack.size) {
+      isCurrentlyPlaying ? pauseTrack() : playTrack(track);
+    }
   };
 
   render() {
-    const { title, artist, classes } = this.props;
+    const { isCurrentlyPlaying, currentTrack, currentSource, classes } = this.props;
 
     return (
       <div className='root'>
         <div className='title-artist-container'>
           <Typography type='subheading' gutterBottom={false} className={classNames(classes.title)}>
-            { title }
+            { currentTrack.get('title') }
           </Typography>
           <Typography type='subheading' gutterBottom={true} className={classNames(classes.artist)}>
-            { artist }
+            { currentTrack.get('artist') }
           </Typography>
         </div>
         <div className='playback-container'>
@@ -66,9 +65,9 @@ class Player extends React.Component {
               color='#40C4FF'
             />
             <Ionicon
-              onClick={ this.togglePlayer }
+              onClick={ this.handlePlayPause }
               className='play-pause-button iconButton'
-              icon={ this.state.isPlaying ? 'ios-pause-outline' : 'ios-play-outline' }
+              icon={ isCurrentlyPlaying ? 'ios-pause-outline' : 'ios-play-outline' }
               fontSize='50px'
               color='#40C4FF'
             />
@@ -82,12 +81,40 @@ class Player extends React.Component {
           <div className='playback-progress'>
             <LinearProgress className={classes.progress} mode="determinate" color='accent' value={60} />
           </div>
+          <SoundCloud
+            track={ currentTrack.getIn(['source', 'url']) }
+            isPlaying={ isCurrentlyPlaying && currentSource === 'soundcloud' }
+          />
+          <YouTube
+            track={ currentTrack.getIn(['source', 'url']) }
+            isPlaying={ isCurrentlyPlaying && currentSource === 'youtube' }
+          />
         </div>
-        <div id='yt-player' />
       </div>
     );
   }
 }
 
-export default withStyles(styles)(Player);
+export function mapDispatchToProps(dispatch) {
+  return {
+    playTrack: track => dispatch(playTrack(track)),
+    pauseTrack: () => dispatch(pauseTrack()),
+  };
+}
 
+const mapStateToProps = createStructuredSelector({
+  isCurrentlyPlaying: makeSelectIsCurrentlyPlaying(),
+  currentTrack: makeSelectCurrentTrack(),
+  currentSource: makeSelectCurrentSource(),
+});
+
+const withConnect = connect(mapStateToProps, mapDispatchToProps);
+const withReducer = injectReducer({ key: 'player', reducer });
+// const withPlayerSaga = injectSaga({ key: 'player', saga: player });
+
+export default compose(
+  withStyles(styles),
+  withReducer,
+  // withPlayerSaga,
+  withConnect,
+)(Player);

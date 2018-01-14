@@ -8,13 +8,10 @@ export function playTrack(track) {
   };
 }
 
-export function playTrackSuccess(title, artist) {
+export function playTrackSuccess(track) {
   return {
     type: PLAY_TRACK_SUCCESS,
-    data: {
-      title,
-      artist
-    }
+    track
   }
 }
 
