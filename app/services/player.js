@@ -1,26 +1,14 @@
 
 import { put, takeLatest } from 'redux-saga/effects';
 
-import { playTrackSuccess, pauseTrackSuccess } from '../containers/Player/actions';
-import { PLAY_TRACK, PAUSE_TRACK } from '../containers/Player/constants';
+import { playTrack, pauseTrack} from '../containers/Player/actions';
+import { LOAD_TRACK } from '../containers/Player/constants';
 
-function* playTrack({ track }) {
+function* loadTrack() {
   try {
 
-    yield put(playTrackSuccess(track));
-
-  } catch (error) {
-
-    // TODO: display error notification
-    console.log(error);
-
-  }
-}
-
-function* pauseTrack() {
-  try {
-
-    yield put(pauseTrackSuccess());
+    yield put(pauseTrack());
+    yield put(playTrack());
 
   } catch (error) {
 
@@ -31,8 +19,5 @@ function* pauseTrack() {
 }
 
 export default function* play() {
-  yield [
-    takeLatest(PLAY_TRACK, playTrack),
-    takeLatest(PAUSE_TRACK, pauseTrack),
-  ];
+  yield takeLatest(LOAD_TRACK, loadTrack);
 }

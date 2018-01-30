@@ -11,13 +11,17 @@ class YouTube extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.isPlaying) {
-      this.player.getPlayerState().then(playerState => {
-        if (playerState === 5) {
-          this.player.loadVideoById(nextProps.track);
-        }
-        this.player.playVideo();
-      });
+    const { isPlaying, track } = nextProps;
+    const prevTrack = this.props.track;
+
+    if (!prevTrack.size || prevTrack.get('id') !== track.get('id')) {
+      this.player.loadVideoById(
+        track.getIn(['source', 'url']).split('v=')[1]
+      );
+    }
+
+    if (isPlaying) {
+      this.player.playVideo();
     } else {
       this.player.pauseVideo();
     }

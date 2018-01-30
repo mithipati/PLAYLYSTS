@@ -1,18 +1,14 @@
 
-import {PLAY_TRACK, PLAY_TRACK_SUCCESS, PAUSE_TRACK, PAUSE_TRACK_SUCCESS } from './constants';
+import {
+  PLAY_TRACK,
+  PAUSE_TRACK,
+  LOAD_TRACK,
+} from './constants';
 
-export function playTrack(track) {
+export function playTrack() {
   return {
-    type: PLAY_TRACK,
-    track
+    type: PLAY_TRACK
   };
-}
-
-export function playTrackSuccess(track) {
-  return {
-    type: PLAY_TRACK_SUCCESS,
-    track
-  }
 }
 
 export function pauseTrack() {
@@ -21,8 +17,9 @@ export function pauseTrack() {
   };
 }
 
-export function pauseTrackSuccess() {
+export function loadTrack(track) {
   return {
-    type: PAUSE_TRACK_SUCCESS
+    type: LOAD_TRACK,
+    track
   };
 }

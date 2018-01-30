@@ -9,9 +9,18 @@ class SoundCloud extends React.Component {
   player = new Player(SOUNDCLOUD_CLIENT_ID);
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.isPlaying) {
+    const { isPlaying, track } = nextProps;
+    const prevTrack = this.props.track;
+
+    if (!prevTrack.size || prevTrack.get('id') !== track.get('id')) {
       this.player.play({
-        streamUrl: nextProps.track
+        streamUrl: nextProps.track.getIn(['source', 'url'])
+      });
+    }
+
+    if (isPlaying) {
+      this.player.play({
+        streamUrl: nextProps.track.getIn(['source', 'url'])
       });
     } else {
       this.player.pause();

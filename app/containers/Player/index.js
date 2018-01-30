@@ -12,7 +12,11 @@ import injectSaga from '../../utils/injectSaga';
 import reducer from './reducer';
 import player from '../../services/player';
 import { playTrack, pauseTrack } from './actions';
-import { makeSelectIsCurrentlyPlaying, makeSelectCurrentTrack, makeSelectCurrentSource } from './selectors';
+import {
+  makeSelectIsCurrentlyPlaying,
+  makeSelectCurrentTrack,
+  makeSelectCurrentSource,
+} from './selectors';
 
 import classNames from 'classnames';
 import Typography from 'material-ui/Typography';
@@ -26,20 +30,9 @@ class Player extends React.Component {
 
   handlePlayPause = () => {
     const { isCurrentlyPlaying, currentTrack, playTrack, pauseTrack } = this.props;
-    const track = {
-      title: 'Thinking Out Loud',
-      artist: 'Ed Sheeran',
-      duration: 150000,
-      source: {
-        name: 'soundcloud',
-        url: 'https://api.soundcloud.com/tracks/251321849/stream'
-        // name: 'youtube',
-        // url: 'f6Cswdm601A'
-      }
-    };
 
     if (currentTrack.size) {
-      isCurrentlyPlaying ? pauseTrack() : playTrack(track);
+      isCurrentlyPlaying ? pauseTrack() : playTrack();
     }
   };
 
@@ -49,10 +42,10 @@ class Player extends React.Component {
     return (
       <div className='root'>
         <div className='title-artist-container'>
-          <Typography type='subheading' gutterBottom={false} className={classNames(classes.title)}>
+          <Typography type='subheading' gutterBottom={false} className={ classNames(classes.title) }>
             { currentTrack.get('title') }
           </Typography>
-          <Typography type='subheading' gutterBottom={true} className={classNames(classes.artist)}>
+          <Typography type='subheading' gutterBottom={true} className={ classNames(classes.artist) }>
             { currentTrack.get('artist') }
           </Typography>
         </div>
@@ -79,14 +72,14 @@ class Player extends React.Component {
             />
           </div>
           <div className='playback-progress'>
-            <LinearProgress className={classes.progress} mode="determinate" color='accent' value={60} />
+            <LinearProgress className={ classes.progress } mode="determinate" color='accent' value={60} />
           </div>
           <SoundCloud
-            track={ currentTrack.getIn(['source', 'url']) }
+            track={ currentTrack }
             isPlaying={ isCurrentlyPlaying && currentSource === 'soundcloud' }
           />
           <YouTube
-            track={ currentTrack.getIn(['source', 'url']) }
+            track={ currentTrack }
             isPlaying={ isCurrentlyPlaying && currentSource === 'youtube' }
           />
         </div>
@@ -97,7 +90,7 @@ class Player extends React.Component {
 
 export function mapDispatchToProps(dispatch) {
   return {
-    playTrack: track => dispatch(playTrack(track)),
+    playTrack: () => dispatch(playTrack()),
     pauseTrack: () => dispatch(pauseTrack()),
   };
 }
@@ -110,11 +103,11 @@ const mapStateToProps = createStructuredSelector({
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);
 const withReducer = injectReducer({ key: 'player', reducer });
-// const withPlayerSaga = injectSaga({ key: 'player', saga: player });
+const withPlayerSaga = injectSaga({ key: 'player', saga: player });
 
 export default compose(
   withStyles(styles),
   withReducer,
-  // withPlayerSaga,
+  withPlayerSaga,
   withConnect,
 )(Player);
