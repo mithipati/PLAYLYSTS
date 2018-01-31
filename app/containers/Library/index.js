@@ -6,12 +6,14 @@ import { createStructuredSelector } from 'reselect';
 import { reduxForm, Field, SubmissionError } from 'redux-form/immutable';
 
 import injectReducer from '../../utils/injectReducer';
-import reducer from './reducer';
 import injectSaga from '../../utils/injectSaga';
+import reducer from './reducer';
 import parser from '../../services/parser';
 
 import { addTrack, removeTrack } from './actions';
+import { playTrack, pauseTrack, loadTrackRequest } from '../Player/actions';
 import { makeSelectTracks } from './selectors';
+import { makeSelectCurrentTrack, makeSelectIsCurrentlyPlaying } from '../Player/selectors';
 import Redirect from './Redirect';
 
 import Grid from 'material-ui/Grid';
@@ -40,18 +42,29 @@ class Library extends React.Component {
   };
 
   render() {
-    const { handleSubmit, submitting, classes } = this.props;
+    const {
+      tracks,
+      playTrack,
+      pauseTrack,
+      loadTrack,
+      removeTrack,
+      isCurrentlyPlaying,
+      currentTrack,
+      handleSubmit,
+      submitting,
+      classes
+    } = this.props;
 
     return (
-      <div className={classes.root}>
+      <div className={ classes.root }>
         <Redirect/>
         <Grid container item={true}>
           <Grid item xs={12} sm={12}>
-            <form onSubmit={handleSubmit(this.handleSubmit)}>
+            <form onSubmit={ handleSubmit(this.handleSubmit) }>
               <Field
                 name='track'
                 label='Add Track'
-                component={TextField}
+                component={ TextField }
                 InputProps={{
                   className: classes.input,
                   autoComplete: false,
@@ -68,20 +81,28 @@ class Library extends React.Component {
                 fullWidth
               />
               {
-                submitting && <CircularProgress size={25} thickness={3.0} color='accent' className={classes.loader} />
+                submitting && <CircularProgress size={25} thickness={3.0} color='accent' className={ classes.loader } />
               }
-              <FormHelperText className={classes.helperText}>
+              <FormHelperText className={ classes.helperText }>
                 Need help?
               </FormHelperText>
             </form>
           </Grid>
           <Grid item xs={12} sm={12}>
-            <Typography type='display2' className={classes.heading}>
+            <Typography type='display2' className={ classes.heading }>
               Library
             </Typography>
           </Grid>
           <Grid item xs={12} sm={12}>
-            <Table tracks={this.props.tracks} onRemoveTrack={this.props.removeTrack} />
+            <Table
+              tracks={ tracks }
+              handlePlayTrack={ playTrack }
+              handlePauseTrack={ pauseTrack }
+              handleLoadTrack={ loadTrack }
+              handleRemoveTrack={ removeTrack }
+              isCurrentlyPlaying={ isCurrentlyPlaying }
+              currentTrack={ currentTrack }
+            />
           </Grid>
         </Grid>
       </div>
@@ -92,12 +113,17 @@ class Library extends React.Component {
 export function mapDispatchToProps(dispatch) {
   return {
     addTrack: trackURL => dispatch(addTrack(trackURL)),
+    playTrack: () => dispatch(playTrack()),
+    pauseTrack: () => dispatch(pauseTrack()),
+    loadTrack: trackIndex => dispatch(loadTrackRequest(trackIndex)),
     removeTrack: track => dispatch(removeTrack(track)),
   };
 }
 
 const mapStateToProps = createStructuredSelector({
   tracks: makeSelectTracks(),
+  isCurrentlyPlaying: makeSelectIsCurrentlyPlaying(),
+  currentTrack: makeSelectCurrentTrack(),
 });
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);

@@ -2,6 +2,10 @@
 .tableRow {
   .button {
     opacity: 0;
+
+    &.active {
+      opacity: 1;
+    }
   }
 
   &:hover {

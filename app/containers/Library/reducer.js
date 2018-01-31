@@ -1,19 +1,7 @@
 
 import { fromJS } from 'immutable';
 import { ADD_TRACK_SUCCESS, REMOVE_TRACK } from './constants';
-
-// TODO remove let TRACKS
-const today = new Date();
-let TRACKS = [];
-for (let i = 0; i < 5; i++) {
-  TRACKS.push({
-    id: Math.random(),
-    title: 'Too Good At Goodbyes',
-    artist: 'Sam Smith',
-    source: 'YouTube',
-    created_at: `${today.getMonth() + 1} / ${today.getDate()} / ${today.getFullYear()}`,
-  });
-}
+import TRACKS from './tracksDummyData';
 
 const initialState = fromJS({
   tracks: TRACKS,

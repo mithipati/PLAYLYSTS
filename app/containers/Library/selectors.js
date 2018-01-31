@@ -5,7 +5,7 @@ const selectLibrary = (state) => state.get('library');
 
 const makeSelectTracks = () => createSelector(
   selectLibrary,
-  (libraryState) => libraryState.get('tracks')
+  libraryState => libraryState.get('tracks')
 );
 
 export {

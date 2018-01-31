@@ -4,8 +4,6 @@ const styles = theme => ({
     boxShadow: 'none',
     backgroundColor: theme.palette.primary[700],
   },
-  table: {
-  },
   tableHeader: {
     fontWeight: 400,
     letterSpacing: 2,
@@ -23,8 +21,11 @@ const styles = theme => ({
     fontWeight: 300,
     borderBottomColor: theme.palette.primary[800],
   },
-  button: {
+  buttonCell: {
     width: 10,
+  },
+  active: {
+    backgroundColor: theme.palette.primary[600],
   },
   placeholder: {
     textAlign: 'center',

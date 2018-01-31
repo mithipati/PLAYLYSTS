@@ -2,16 +2,9 @@
 import { createSelector } from 'reselect';
 import { getVal } from 'react-redux-firebase';
 
-const selectGlobal = state => state.get('global');
-
 const selectRoute = state => state.get('route');
 
 const selectFirebase = state => state.get('firebase');
-
-const makeSelectCurrentlyPlaying = () => createSelector(
-  selectGlobal,
-  globalState => globalState.get('currentlyPlaying')
-);
 
 const makeSelectLocation = () => createSelector(
   selectRoute,
@@ -37,8 +30,6 @@ const makeSelectIsSpotifyConnected = () => createSelector(
 );
 
 export {
-  selectGlobal,
-  makeSelectCurrentlyPlaying,
   makeSelectLocation,
   makeSelectAuth,
   makeSelectProfile,
