@@ -14,12 +14,17 @@ class YouTube extends React.Component {
     const { isPlaying, track } = nextProps;
     const prevTrack = this.props.track;
 
-    if (!prevTrack.size || prevTrack.get('id') !== track.get('id')) {
+    // determine if new track is being played
+    if (
+        track.size
+        && (!prevTrack.size || prevTrack.get('id') !== track.get('id'))
+    ) {
       this.player.loadVideoById(
         track.getIn(['source', 'url']).split('v=')[1]
       );
     }
 
+    // determine whether to play or pause track
     if (isPlaying) {
       this.player.playVideo();
     } else {

@@ -25,7 +25,7 @@ class TracksTable extends React.Component {
       classes
     } = this.props;
 
-    return tracks.map(track => {
+    return tracks.map((track, trackIndex) => {
       const isCurrentTrack = currentTrack && currentTrack.get('id') === track.get('id');
 
       return (
@@ -38,7 +38,7 @@ class TracksTable extends React.Component {
               onClick={
                 isCurrentTrack
                   ? isCurrentlyPlaying ? handlePauseTrack : handlePlayTrack
-                  : handleLoadTrack.bind(null, track)
+                  : handleLoadTrack.bind(null, trackIndex)
               }
               icon={
                 isCurrentTrack

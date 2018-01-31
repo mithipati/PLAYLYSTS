@@ -12,15 +12,18 @@ class SoundCloud extends React.Component {
     const { isPlaying, track } = nextProps;
     const prevTrack = this.props.track;
 
-    if (!prevTrack.size || prevTrack.get('id') !== track.get('id')) {
-      this.player.play({
-        streamUrl: nextProps.track.getIn(['source', 'url'])
-      });
+    // determine if new track is being played
+    if (
+        track.size
+        && (!prevTrack.size || prevTrack.get('id') !== track.get('id'))
+    ) {
+      this.player.stop();
     }
 
-    if (isPlaying) {
+    // determine whether to play or pause track
+    if (isPlaying && track.size) {
       this.player.play({
-        streamUrl: nextProps.track.getIn(['source', 'url'])
+        streamUrl: track.getIn(['source', 'url'])
       });
     } else {
       this.player.pause();

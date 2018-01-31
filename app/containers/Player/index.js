@@ -11,11 +11,13 @@ import injectReducer from '../../utils/injectReducer';
 import injectSaga from '../../utils/injectSaga';
 import reducer from './reducer';
 import player from '../../services/player';
-import { playTrack, pauseTrack } from './actions';
+import { playTrack, pauseTrack, nextTrackRequest, prevTrackRequest } from './actions';
 import {
-  makeSelectIsCurrentlyPlaying,
+  makeSelectCurrentPlaylistCount,
+  makeSelectCurrentTrackIndex,
   makeSelectCurrentTrack,
   makeSelectCurrentSource,
+  makeSelectIsCurrentlyPlaying,
 } from './selectors';
 
 import classNames from 'classnames';
@@ -28,7 +30,7 @@ import Ionicon from 'react-ionicons'
 
 class Player extends React.Component {
 
-  handlePlayPause = () => {
+  handlePlayPauseTrack = () => {
     const { isCurrentlyPlaying, currentTrack, playTrack, pauseTrack } = this.props;
 
     if (currentTrack.size) {
@@ -37,7 +39,16 @@ class Player extends React.Component {
   };
 
   render() {
-    const { isCurrentlyPlaying, currentTrack, currentSource, classes } = this.props;
+    const {
+      currentPlaylistCount,
+      currentTrackIndex,
+      currentTrack,
+      currentSource,
+      isCurrentlyPlaying,
+      nextTrack,
+      prevTrack,
+      classes
+    } = this.props;
 
     return (
       <div className='root'>
@@ -52,19 +63,21 @@ class Player extends React.Component {
         <div className='playback-container'>
           <div className='playback-buttons'>
             <Ionicon
+              onClick={ prevTrack.bind(null, currentTrackIndex) }
               className='iconButton'
               icon='ios-skip-backward-outline'
               fontSize='30px'
               color='#40C4FF'
             />
             <Ionicon
-              onClick={ this.handlePlayPause }
+              onClick={ this.handlePlayPauseTrack }
               className='play-pause-button iconButton'
               icon={ isCurrentlyPlaying ? 'ios-pause-outline' : 'ios-play-outline' }
               fontSize='50px'
               color='#40C4FF'
             />
             <Ionicon
+              onClick={ nextTrack.bind(null, currentPlaylistCount, currentTrackIndex) }
               className='iconButton'
               icon='ios-skip-forward-outline'
               fontSize='30px'
@@ -92,13 +105,17 @@ export function mapDispatchToProps(dispatch) {
   return {
     playTrack: () => dispatch(playTrack()),
     pauseTrack: () => dispatch(pauseTrack()),
+    nextTrack: (count, index) => dispatch(nextTrackRequest(count, index)),
+    prevTrack: index => dispatch(prevTrackRequest(index)),
   };
 }
 
 const mapStateToProps = createStructuredSelector({
-  isCurrentlyPlaying: makeSelectIsCurrentlyPlaying(),
+  currentPlaylistCount: makeSelectCurrentPlaylistCount(),
+  currentTrackIndex: makeSelectCurrentTrackIndex(),
   currentTrack: makeSelectCurrentTrack(),
   currentSource: makeSelectCurrentSource(),
+  isCurrentlyPlaying: makeSelectIsCurrentlyPlaying(),
 });
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);

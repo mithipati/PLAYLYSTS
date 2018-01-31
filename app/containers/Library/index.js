@@ -11,7 +11,7 @@ import reducer from './reducer';
 import parser from '../../services/parser';
 
 import { addTrack, removeTrack } from './actions';
-import { playTrack, pauseTrack, loadTrack } from '../Player/actions';
+import { playTrack, pauseTrack, loadTrackRequest } from '../Player/actions';
 import { makeSelectTracks } from './selectors';
 import { makeSelectCurrentTrack, makeSelectIsCurrentlyPlaying } from '../Player/selectors';
 import Redirect from './Redirect';
@@ -115,7 +115,7 @@ export function mapDispatchToProps(dispatch) {
     addTrack: trackURL => dispatch(addTrack(trackURL)),
     playTrack: () => dispatch(playTrack()),
     pauseTrack: () => dispatch(pauseTrack()),
-    loadTrack: track => dispatch(loadTrack(track)),
+    loadTrack: trackIndex => dispatch(loadTrackRequest(trackIndex)),
     removeTrack: track => dispatch(removeTrack(track)),
   };
 }
