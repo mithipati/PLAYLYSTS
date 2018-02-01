@@ -4,7 +4,6 @@ const axios = require('axios');
 const queryString = require('query-string');
 const base64 = require('base-64');
 
-const firebaseHandle = require('./firebaseHandle');
 const logger = require('../../logger');
 
 const SOUNDCLOUD_TRACK_ENDPOINT = require('./constants').SOUNDCLOUD_TRACK_ENDPOINT;
