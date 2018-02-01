@@ -47,7 +47,6 @@ class TracksTable extends React.Component {
               }
               className={ classNames('iconButton', 'button', { active: isCurrentTrack }) }
               fontSize='30px'
-              color='#40C4FF'
             />
           </TableCell>
           <TableCell padding='default' className={ classes.tableCell }>
@@ -67,7 +66,6 @@ class TracksTable extends React.Component {
               className={ classNames('iconButton', 'button', { active: isCurrentTrack }) }
               icon='ios-more'
               fontSize='30px'
-              color='#40C4FF'
               onClick={ handleRemoveTrack.bind(null, track) }
             />
           </TableCell>

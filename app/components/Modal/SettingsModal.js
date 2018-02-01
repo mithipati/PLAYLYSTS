@@ -15,7 +15,7 @@ const SettingsModal =  (props) => {
   return (
     <Dialog
       open={open}
-      onRequestClose={handleClose}
+      onClose={handleClose}
     >
       <DialogContent className={classes.modalContent}>
         <SettingsForm handleClose={handleClose} />

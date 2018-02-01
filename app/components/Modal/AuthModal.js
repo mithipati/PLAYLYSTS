@@ -41,7 +41,7 @@ class AuthModal extends React.Component {
           value={this.state.tabNumber}
           onChange={this.handleChange}
           className={classes.modalTab}
-          indicatorColor='accent'
+          indicatorColor='secondary'
           fullWidth
         >
           <Tab label='Sign Up' className={classes.modalTab} />

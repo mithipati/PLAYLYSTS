@@ -93,6 +93,7 @@ injectGlobal`
   
   .iconButton {
     cursor: pointer;
+    color: #40C4FF;
     
     -webkit-transition: all .1s ease;
     -moz-transition: all .1s ease;

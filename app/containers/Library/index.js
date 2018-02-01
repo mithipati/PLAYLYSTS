@@ -67,7 +67,6 @@ class Library extends React.Component {
                 component={ TextField }
                 InputProps={{
                   className: classes.input,
-                  autoComplete: false,
                   autoCorrect: false,
                   autoCapitalize: false,
                   spellCheck: false,
@@ -81,7 +80,7 @@ class Library extends React.Component {
                 fullWidth
               />
               {
-                submitting && <CircularProgress size={25} thickness={3.0} color='accent' className={ classes.loader } />
+                submitting && <CircularProgress size={25} thickness={3.0} color='secondary' className={ classes.loader } />
               }
               <FormHelperText className={ classes.helperText }>
                 Need help?

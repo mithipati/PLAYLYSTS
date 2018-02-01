@@ -13,7 +13,7 @@ const LoaderIcon = styled(CircularProgress)`
 
 const Loader = (props) => {
   return (
-    <LoaderIcon size={props.size} thickness={1.0} color='accent' />
+    <LoaderIcon size={props.size} thickness={1.0} color='secondary' />
   );
 };
 

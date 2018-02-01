@@ -11,14 +11,14 @@ const styles = theme => ({
     borderBottomColor: theme.palette.primary[800],
   },
   tableRow: {
-    color: theme.palette.primary[200],
-
     '&:hover': {
       backgroundColor: theme.palette.primary[600],
     }
   },
   tableCell: {
     fontWeight: 300,
+    fontSize: 15,
+    color: theme.palette.primary[200],
     borderBottomColor: theme.palette.primary[800],
   },
   buttonCell: {

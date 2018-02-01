@@ -73,7 +73,7 @@ class SettingsForm extends React.Component {
                 <img src='spotify-icon.png' className='social-icon'/>
                 { isSpotifyConnected ? 'DISCONNECT' : 'CONNECT' }
               </span>
-            : <CircularProgress size={25} thickness={3.0} color='accent'/>
+            : <CircularProgress size={25} thickness={3.0} color='secondary'/>
           }
         </button>
         <Field
@@ -86,7 +86,7 @@ class SettingsForm extends React.Component {
           {
             !submitting
             ? <span>SAVE</span>
-            : <CircularProgress size={25} thickness={3.0} color='accent'/>
+            : <CircularProgress size={25} thickness={3.0} color='secondary'/>
           }
         </button>
         <div className='divider'/>

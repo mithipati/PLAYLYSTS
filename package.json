@@ -44,8 +44,7 @@
     "test:watch": "cross-env NODE_ENV=test jest --watchAll",
     "coveralls": "cat ./coverage/lcov.info | coveralls"
   },
-  "lint-staged": {
-  },
+  "lint-staged": {},
   "pre-commit": "lint:staged",
   "babel": {
     "plugins": [
@@ -246,7 +245,7 @@
     "react-router-dom": "4.1.1",
     "react-router-redux": "5.0.0-alpha.6",
     "redux": "3.6.0",
-    "redux-form": "^6.8.0",
+    "redux-form": "^7.2.1",
     "redux-form-material-ui": "^5.0.0-beta.2",
     "redux-immutable": "4.0.0",
     "redux-saga": "0.15.3",

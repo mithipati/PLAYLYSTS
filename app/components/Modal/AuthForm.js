@@ -167,21 +167,21 @@ class AuthForm extends React.Component {
           ? <button type='submit' disabled={submitting} className='action-button'>
               { !submitting
                 ? <span>RESET</span>
-                : <CircularProgress size={25} thickness={3.0} color='accent'/>
+                : <CircularProgress size={25} thickness={3.0} color='secondary'/>
               }
             </button>
           : <div>
               <button type='submit' disabled={submitting} className='action-button'>
                 { !submitting
                   ? <span>SUBMIT</span>
-                  : <CircularProgress size={25} thickness={3.0} color='accent'/>
+                  : <CircularProgress size={25} thickness={3.0} color='secondary'/>
                 }
               </button>
               <div className={classes.clearfix}>- OR -</div>
               <button onClick={handleSubmit(this.handleFacebookSubmit)} disabled={submitting} className='action-button'>
                 { !this.state.isFacebookSubmitting
                   ? <span><img src='facebook-icon.png' className='social-icon' />Continue with Facebook</span>
-                  : <CircularProgress size={25} thickness={3.0} color='accent' />
+                  : <CircularProgress size={25} thickness={3.0} color='secondary' />
                 }
               </button>
               <Field

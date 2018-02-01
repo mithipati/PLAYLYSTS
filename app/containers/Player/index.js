@@ -85,7 +85,7 @@ class Player extends React.Component {
             />
           </div>
           <div className='playback-progress'>
-            <LinearProgress className={ classes.progress } mode="determinate" color='accent' value={60} />
+            <LinearProgress className={ classes.progress } mode="determinate" color='secondary' value={60} />
           </div>
           <SoundCloud
             track={ currentTrack }
